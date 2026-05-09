@@ -1,0 +1,275 @@
+/* ═══════════════════════════════════════════════════════
+   UploadBox.css — OCP Portail RH
+   Charte : Vert OCP · Fond blanc · Labels majuscules verts
+═══════════════════════════════════════════════════════ */
+
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;500;600;700;800&display=swap');
+
+/* ─── Tokens (si utilisé standalone) ─── */
+:root {
+  --ocp-green-dark:  #1e4d20;
+  --ocp-green:       #2d6a2f;
+  --ocp-green-mid:   #3a7d3c;
+  --ocp-green-light: #4caf50;
+  --ocp-green-pale:  #e8f5e9;
+  --ocp-green-bg:    #f4faf4;
+  --white:           #ffffff;
+  --text-dark:       #1a2e1a;
+  --text-mid:        #3d5c3e;
+  --text-light:      #6a8f6b;
+  --border:          #c8e6c9;
+  --shadow-sm:  0 2px 8px  rgba(45,106,47,0.10);
+  --shadow-md:  0 4px 20px rgba(45,106,47,0.14);
+  --radius-sm:  8px;
+  --radius-md:  14px;
+  --transition: 200ms cubic-bezier(0.4,0,0.2,1);
+}
+
+/* ─── Card conteneur ─── */
+.upload-box {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 36px 32px;
+  max-width: 680px;
+  box-shadow: var(--shadow-sm);
+  transition: box-shadow var(--transition);
+}
+.upload-box:hover {
+  box-shadow: var(--shadow-md);
+}
+.upload-box.dragging {
+  border-color: var(--ocp-green);
+  box-shadow: 0 0 0 3px rgba(45,106,47,0.15), var(--shadow-md);
+}
+
+/* ─── En-tête section — style "AJOUTER UN UTILISATEUR" ─── */
+.upload-box-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 28px;
+  padding-bottom: 18px;
+  border-bottom: 1px solid var(--ocp-green-pale);
+}
+
+.upload-box-header-icon {
+  color: var(--ocp-green);
+  font-size: 18px;
+  font-weight: 800;
+}
+
+.upload-box-title {
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--ocp-green);
+}
+
+/* ─── Zone de dépôt ─── */
+.drop-zone {
+  border: 2px dashed var(--border);
+  border-radius: var(--radius-sm);
+  padding: 40px 20px;
+  text-align: center;
+  cursor: pointer;
+  background: var(--ocp-green-bg);
+  transition: all var(--transition);
+  position: relative;
+}
+.drop-zone:hover,
+.drop-zone.active {
+  border-color: var(--ocp-green-light);
+  background: var(--ocp-green-pale);
+}
+.drop-zone input[type="file"] {
+  display: none;
+}
+
+.drop-zone-arrow {
+  font-size: 30px;
+  margin-bottom: 12px;
+  display: block;
+  color: var(--ocp-green-mid);
+  animation: float 3s ease-in-out infinite;
+}
+@keyframes float {
+  0%,100% { transform: translateY(0); }
+  50%      { transform: translateY(-5px); }
+}
+
+.drop-zone-text {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-mid);
+  margin-bottom: 5px;
+}
+
+.drop-zone-hint {
+  font-size: 12px;
+  color: var(--text-light);
+}
+
+.drop-zone-hint span {
+  color: var(--ocp-green);
+  font-weight: 700;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+/* ─── Tags formats acceptés ─── */
+.upload-formats {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 16px;
+}
+
+.format-tag {
+  padding: 3px 12px;
+  border-radius: 99px;
+  background: var(--ocp-green-pale);
+  border: 1px solid var(--border);
+  color: var(--ocp-green-mid);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+
+/* ─── Fichier sélectionné ─── */
+.file-pill {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 16px;
+  padding: 12px 16px;
+  background: var(--ocp-green-pale);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  animation: slideIn 0.2s ease;
+}
+@keyframes slideIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.file-pill-icon { font-size: 22px; flex-shrink: 0; }
+
+.file-pill-info { flex: 1; min-width: 0; }
+
+.file-pill-name {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--ocp-green);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.file-pill-size {
+  font-size: 11px;
+  color: var(--text-light);
+  margin-top: 2px;
+}
+
+.file-pill-remove {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--text-light);
+  font-size: 16px;
+  padding: 4px 6px;
+  border-radius: 4px;
+  transition: all var(--transition);
+  flex-shrink: 0;
+}
+.file-pill-remove:hover {
+  color: #c0392b;
+  background: #fdecea;
+}
+
+/* ─── Barre de progression ─── */
+.upload-progress-wrap {
+  margin-top: 16px;
+  background: var(--ocp-green-pale);
+  border-radius: 99px;
+  height: 6px;
+  overflow: hidden;
+}
+.upload-progress-bar {
+  height: 100%;
+  border-radius: 99px;
+  background: linear-gradient(90deg, var(--ocp-green-dark), var(--ocp-green-light));
+  transition: width 300ms ease;
+}
+
+/* ─── Bouton upload — même style bouton vert OCP ─── */
+.upload-btn {
+  margin-top: 24px;
+  width: 100%;
+  padding: 14px;
+  border-radius: var(--radius-sm);
+  border: none;
+  background: var(--ocp-green);
+  color: var(--white);
+  font-family: 'Nunito', sans-serif;
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all var(--transition);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+.upload-btn:hover:not(:disabled) {
+  background: var(--ocp-green-dark);
+  box-shadow: var(--shadow-md);
+  transform: translateY(-1px);
+}
+.upload-btn:active:not(:disabled) {
+  transform: translateY(0);
+  box-shadow: none;
+}
+.upload-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+/* Spinner pendant chargement */
+.upload-btn.loading::before {
+  content: '';
+  width: 14px; height: 14px;
+  border: 2px solid rgba(255,255,255,0.4);
+  border-top-color: var(--white);
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+  flex-shrink: 0;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ─── Message feedback ─── */
+.upload-message {
+  margin-top: 16px;
+  padding: 12px 16px;
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  animation: slideIn 0.2s ease;
+}
+.upload-message.success {
+  background: var(--ocp-green-pale);
+  border: 1px solid var(--border);
+  color: var(--ocp-green);
+}
+.upload-message.error {
+  background: #fdecea;
+  border: 1px solid #f5c6c6;
+  color: #c0392b;
+}

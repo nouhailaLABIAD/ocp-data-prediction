@@ -1,0 +1,197 @@
+/* ═══════════════════════════════════════════════════════
+   Dashboard.css — OCP Portail RH
+   Charte : Vert OCP dominant · Fond blanc/vert très pâle
+═══════════════════════════════════════════════════════ */
+
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;500;600;700;800&display=swap');
+
+/* ─── Design Tokens ─── */
+:root {
+  --ocp-green-dark:  #1e4d20;
+  --ocp-green:       #2d6a2f;
+  --ocp-green-mid:   #3a7d3c;
+  --ocp-green-light: #4caf50;
+  --ocp-green-pale:  #e8f5e9;
+  --ocp-green-bg:    #f4faf4;
+
+  --white:       #ffffff;
+  --text-dark:   #1a2e1a;
+  --text-mid:    #3d5c3e;
+  --text-light:  #6a8f6b;
+  --border:      #c8e6c9;
+
+  --shadow-sm: 0 2px 8px  rgba(45,106,47,0.10);
+  --shadow-md: 0 4px 20px rgba(45,106,47,0.14);
+
+  --radius-sm: 8px;
+  --radius-md: 14px;
+  --radius-lg: 20px;
+  --transition: 200ms cubic-bezier(0.4,0,0.2,1);
+  --topbar-h: 64px;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Nunito', sans-serif;
+  background: var(--ocp-green-bg);
+  color: var(--text-dark);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ─── Page Shell ─── */
+.dashboard-page {
+  min-height: 100vh;
+  background: var(--ocp-green-bg);
+}
+
+/* ─── Topbar ─── */
+.dashboard-topbar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  height: var(--topbar-h);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 32px;
+  background: var(--ocp-green);
+  box-shadow: var(--shadow-md);
+}
+
+/* Logo + label groupés */
+.topbar-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.topbar-logo {
+  height: 34px;
+  object-fit: contain;
+  filter: brightness(0) invert(1);
+}
+
+.topbar-brand-label {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--white);
+  letter-spacing: 0.2px;
+}
+
+/* Côté droit */
+.topbar-user {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* Avatar initiales */
+.topbar-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.20);
+  border: 2px solid rgba(255,255,255,0.40);
+  color: var(--white);
+  font-size: 12px;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  letter-spacing: 0.5px;
+  flex-shrink: 0;
+}
+
+.topbar-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--white);
+}
+
+/* Badge rôle — même style que "ADMIN" dans image 2 */
+.topbar-role-tag {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 14px;
+  border-radius: 99px;
+  border: 2px solid rgba(255,255,255,0.55);
+  background: transparent;
+  color: var(--white);
+  font-family: 'Nunito', sans-serif;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+}
+
+/* Bouton déconnexion — même style image 2 */
+.logout-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 18px;
+  border-radius: var(--radius-sm);
+  border: 2px solid rgba(255,255,255,0.55);
+  background: transparent;
+  color: var(--white);
+  font-family: 'Nunito', sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all var(--transition);
+}
+.logout-btn::before { content: '↩'; font-size: 15px; }
+.logout-btn:hover {
+  background: rgba(255,255,255,0.18);
+  border-color: var(--white);
+}
+.logout-btn:active { opacity: 0.85; }
+
+/* ─── Main Content ─── */
+.dashboard-main {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 48px 32px 80px;
+  animation: fadeUp 0.4s ease both;
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* "ESPACE CONTRÔLEUR" label au-dessus */
+.dashboard-label {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--ocp-green-mid);
+  margin-bottom: 10px;
+}
+
+.dashboard-main h1 {
+  font-size: clamp(22px, 3vw, 30px);
+  font-weight: 800;
+  color: var(--text-dark);
+  margin-bottom: 6px;
+  line-height: 1.25;
+}
+
+.dashboard-main h1 strong {
+  color: var(--ocp-green);
+}
+
+.dashboard-main > p {
+  font-size: 14px;
+  color: var(--text-light);
+  margin-bottom: 40px;
+  padding-bottom: 28px;
+  border-bottom: 1px solid var(--border);
+}
+
+/* ─── Upload section ─── */
+.upload-section {
+  animation: fadeUp 0.4s 0.1s ease both;
+}
