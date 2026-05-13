@@ -7,6 +7,8 @@ import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
 import { UploadModule } from './upload/upload.module';
 import { FichierExcel } from './upload/entities/fichier-excel.entity';
+import { DonneeProduction } from './upload/entities/donnee-production.entity';
+import { PosteCharge } from './upload/entities/poste-charge.entity';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -22,7 +24,8 @@ import { FichierExcel } from './upload/entities/fichier-excel.entity';
         username: config.get('DB_USERNAME'),
         password: config.get('DB_PASSWORD'),
         database: config.get('DB_NAME'),
-        entities: [User,FichierExcel],
+        entities: [User,FichierExcel,DonneeProduction,
+        PosteCharge],
         synchronize: true,
       }),
     }),

@@ -1,12 +1,11 @@
-import {
-  Controller,
-  Post,
-  UseInterceptors,
-  UploadedFile,
-  UseGuards,
-  BadRequestException,
-} from '@nestjs/common';
 
+import * as multer from 'multer';
+
+// upload.controller.ts
+import {
+  Controller, Post, UseInterceptors, UploadedFile,
+  UseGuards, BadRequestException, Body, Req,
+} from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { UploadService } from './upload.service';
@@ -18,12 +17,20 @@ export class UploadController {
   @UseGuards(JwtAuthGuard)
   @Post()
   @UseInterceptors(FileInterceptor('file'))
-  async uploadFile(@UploadedFile() file: Express.Multer.File) {
+  async uploadFile(
+    @UploadedFile() file: Express.Multer.File,
+    @Body('type')  type:  string,
+    @Body('mois')  mois:  string,
+    @Body('annee') annee: string,
+    @Req() req: any,
+  ) {
+    if (!file)  throw new BadRequestException('Aucun fichier envoyé');
+    if (!type)  throw new BadRequestException('Type requis');
+    if (!mois)  throw new BadRequestException('Mois requis');
+    if (!annee) throw new BadRequestException('Année requise');
 
-    if (!file) {
-      throw new BadRequestException('Aucun fichier envoyé');
-    }
-
-    return this.uploadService.processExcel(file);
+    return this.uploadService.processExcel(
+      file, type, mois, parseInt(annee), req.user,
+    );
   }
 }
