@@ -1,4 +1,5 @@
-import { useEffect, useState } from 'react';
+// AdminDashboard.jsx — OCP Portail RH · Admin + Recherche live
+import { useEffect, useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import '../styles/AdminDashboard.css';
@@ -9,14 +10,15 @@ const API = 'http://localhost:3000';
 export default function AdminDashboard() {
   const [users, setUsers]         = useState([]);
   const [editingUser, setEditing] = useState(null);
+  const [search, setSearch]       = useState('');
   const [form, setForm]           = useState({
     fullname: '', email: '', password: '', role: 'CONTROLEUR',
   });
 
   const token    = localStorage.getItem('token');
   const navigate = useNavigate();
-
-  const headers = { Authorization: `Bearer ${token}` };
+  const headers  = { Authorization: `Bearer ${token}` };
+  const searchRef = useRef(null);
 
   const fetchUsers = async () => {
     try {
@@ -28,6 +30,17 @@ export default function AdminDashboard() {
   };
 
   useEffect(() => { fetchUsers(); }, []);
+
+  // ── Recherche live ─────────────────────────────────────────
+  const filteredUsers = users.filter(u => {
+    const q = search.toLowerCase().trim();
+    if (!q) return true;
+    return (
+      u.fullname?.toLowerCase().includes(q) ||
+      u.email?.toLowerCase().includes(q)    ||
+      u.role?.toLowerCase().includes(q)
+    );
+  });
 
   const handleChange = (e) =>
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -149,21 +162,18 @@ export default function AdminDashboard() {
           </div>
           <div className="card-body">
             <form className="admin-form" onSubmit={handleSubmit}>
-
               <div className="form-field">
                 <label className="form-label">Nom complet</label>
                 <input className="form-input" type="text" name="fullname"
                   placeholder="Prénom Nom" value={form.fullname}
                   onChange={handleChange} required />
               </div>
-
               <div className="form-field">
                 <label className="form-label">Email</label>
                 <input className="form-input" type="email" name="email"
                   placeholder="prenom.nom@ocpgroup.ma" value={form.email}
                   onChange={handleChange} required />
               </div>
-
               <div className="form-field">
                 <label className="form-label">
                   Mot de passe&nbsp;
@@ -177,7 +187,6 @@ export default function AdminDashboard() {
                   placeholder="••••••••" value={form.password}
                   onChange={handleChange} required={!editingUser} />
               </div>
-
               <div className="form-field">
                 <label className="form-label">Rôle</label>
                 <div className="select-wrapper">
@@ -188,47 +197,87 @@ export default function AdminDashboard() {
                   </select>
                 </div>
               </div>
-
               <button type="submit" className={`btn-submit ${editingUser ? 'editing' : ''}`}>
                 {editingUser ? '💾  Enregistrer les modifications' : '+ Ajouter l\'utilisateur'}
               </button>
-
               {editingUser && (
                 <button type="button" className="btn-cancel" onClick={cancelEdit}>
                   Annuler
                 </button>
               )}
-
             </form>
           </div>
         </div>
 
-        {/* ── Liste ── */}
+        {/* ── Liste + Recherche ── */}
         <div className="card">
           <div className="card-header">
             <span className="card-header-icon">📋</span>
             <span className="card-title">Utilisateurs enregistrés</span>
             <span className="list-count">
-              {users.length} utilisateur{users.length !== 1 ? 's' : ''}
+              {filteredUsers.length} / {users.length}
             </span>
           </div>
-          <div className="card-body">
-            {users.length === 0 ? (
+
+          {/* Barre de recherche */}
+          <div className="search-bar-wrap">
+            <div className="search-bar">
+              <svg className="search-icon" width="16" height="16" viewBox="0 0 24 24"
+                fill="none" stroke="currentColor" strokeWidth="2.2"
+                strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="11" cy="11" r="8"/>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+              </svg>
+              <input
+                ref={searchRef}
+                className="search-input"
+                type="text"
+                placeholder="Rechercher par nom, email ou rôle…"
+                value={search}
+                onChange={e => setSearch(e.target.value)}
+                autoComplete="off"
+              />
+              {search && (
+                <button className="search-clear" onClick={() => { setSearch(''); searchRef.current?.focus(); }}>
+                  ✕
+                </button>
+              )}
+            </div>
+            {search && (
+              <p className="search-hint">
+                {filteredUsers.length === 0
+                  ? 'Aucun résultat pour « ' + search + ' »'
+                  : `${filteredUsers.length} résultat${filteredUsers.length > 1 ? 's' : ''} pour « ${search} »`
+                }
+              </p>
+            )}
+          </div>
+
+          <div className="card-body" style={{ paddingTop: 0 }}>
+            {filteredUsers.length === 0 ? (
               <div className="empty-state">
-                <div className="empty-icon">👤</div>
-                <p className="empty-text">Aucun utilisateur enregistré</p>
-                <p className="empty-sub">Ajoutez un utilisateur via le formulaire ci-dessus</p>
+                <div className="empty-icon">{search ? '🔍' : '👤'}</div>
+                <p className="empty-text">
+                  {search ? `Aucun utilisateur trouvé` : 'Aucun utilisateur enregistré'}
+                </p>
+                <p className="empty-sub">
+                  {search ? `Essayez un autre critère de recherche` : 'Ajoutez un utilisateur via le formulaire ci-dessus'}
+                </p>
               </div>
             ) : (
               <div className="users-list">
-                {users.map((user) => (
+                {filteredUsers.map((user) => (
                   <div key={user.id}
                     className={`user-card ${editingUser?.id === user.id ? 'editing-target' : ''}`}>
                     <div className="user-info">
                       <div className="user-avatar">{getInitials(user.fullname)}</div>
                       <div className="user-details">
-                        <span className="user-name">{user.fullname}</span>
-                        <span className="user-email">{user.email}</span>
+                        <span className="user-name">
+                          <Highlight text={user.fullname} query={search} />
+                        </span>
+                        <span className="user-email">
+                          <Highlight text={user.email} query={search} />
+                        </span>
                       </div>
                     </div>
                     <div className="user-right">
@@ -262,5 +311,24 @@ export default function AdminDashboard() {
 
       </main>
     </div>
+  );
+}
+
+// ── Highlight des termes recherchés ──────────────────────────
+function Highlight({ text = '', query = '' }) {
+  if (!query.trim()) return <>{text}</>;
+  const regex = new RegExp(`(${query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
+  const parts = text.split(regex);
+  return (
+    <>
+      {parts.map((part, i) =>
+        regex.test(part)
+          ? <mark key={i} style={{
+              background: '#fff176', color: '#1a2e1a',
+              borderRadius: 3, padding: '0 2px', fontWeight: 800,
+            }}>{part}</mark>
+          : <span key={i}>{part}</span>
+      )}
+    </>
   );
 }
