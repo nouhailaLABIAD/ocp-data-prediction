@@ -1,0 +1,38 @@
+SonarQube plugins:
+  - Python Code Quality and Security 3.4.1.8066 (python)
+  - CSS Code Quality and Security 1.4.2.2002 (cssfamily)
+  - Go Code Quality and Security 1.8.3.2219 (go)
+  - JaCoCo 1.1.1.1157 (jacoco)
+  - Kotlin Code Quality and Security 1.8.3.2219 (kotlin)
+  - JavaScript/TypeScript Code Quality and Security 7.4.4.15624 (javascript)
+  - Ruby Code Quality and Security 1.8.3.2219 (ruby)
+  - Scala Code Quality and Security 1.8.3.2219 (sonarscala)
+  - C# Code Quality and Security 8.22.0.31243 (csharp)
+  - Java Code Quality and Security 6.15.1.26025 (java)
+  - HTML Code Quality and Security 3.4.0.2754 (web)
+  - Flex Code Quality and Security 2.6.1.2564 (flex)
+  - XML Code Quality and Security 2.2.0.2973 (xml)
+  - PHP Code Quality and Security 3.17.0.7439 (php)
+  - VB.NET Code Quality and Security 8.22.0.31243 (vbnet)
+Global server settings:
+  - sonar.core.id=BF41A1F2-AZ0bc9sycQN3ddWVOGf5
+  - sonar.core.startTime=2026-06-04T22:16:01+0200
+  - sonar.forceAuthentication=true
+Project server settings:
+Project scanner properties:
+  - sonar.exclusions=**/node_modules/**,**/venv/**,**/__pycache__/**,**/dist/**,**/coverage/**
+  - sonar.host.url=http://localhost:9000
+  - sonar.javascript.lcov.reportPaths=frontend/coverage/lcov.info
+  - sonar.login=******
+  - sonar.projectBaseDir=C:\Users\intel\Documents\ILISI\PFA\projet_pfa
+  - sonar.projectKey=ocp-ai-platform
+  - sonar.projectName=OCP AI Platform
+  - sonar.python.coverage.reportPaths=ai-service/coverage.xml
+  - sonar.python.version=3.11
+  - sonar.scanner.app=ScannerCli
+  - sonar.scanner.appVersion=3.1.0.1141
+  - sonar.sourceEncoding=UTF-8
+  - sonar.sources=frontend/src,backend/src,ai-service
+  - sonar.typescript.lcov.reportPaths=backend/coverage/lcov.info
+  - sonar.verbose=true
+  - sonar.working.directory=C:\Users\intel\Documents\ILISI\PFA\projet_pfa\.scannerwork

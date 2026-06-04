@@ -1,0 +1,1 @@
+ 2jsXóhr%frontend/src/components/UploadBox.jsx

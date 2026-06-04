@@ -6,9 +6,15 @@ from models.prediction import MOIS_ORDER, MOIS_NAMES
 
 
 def predict_production(df: pd.DataFrame):
+    required = {"mois", "activite", "tonnage_realise"}
+    missing = required - set(df.columns)
+    if missing:
+        raise KeyError(f"Missing columns: {sorted(missing)}")
+
     df = df.copy()
     df["mois_num"] = df["mois"].map(MOIS_ORDER)
     df = df.sort_values("mois_num")
+
 
     # ── Prédiction par activité
     activites = df["activite"].unique()

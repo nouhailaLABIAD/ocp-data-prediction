@@ -13,9 +13,15 @@ MOIS_NAMES = {v: k for k, v in MOIS_ORDER.items()}
 
 
 def predict_charges(df: pd.DataFrame):
+    required = {"mois", "poste", "cout_total"}
+    missing = required - set(df.columns)
+    if missing:
+        raise KeyError(f"Missing columns: {sorted(missing)}")
+
     df = df.copy()
     df["mois_num"] = df["mois"].map(MOIS_ORDER)
     df = df.sort_values("mois_num")
+
 
     # ── Prédiction par poste
     postes = df["poste"].unique()

@@ -1,8 +1,15 @@
 # database.py
 
-from sqlalchemy import create_engine, text
-from sqlalchemy.orm import sessionmaker
 import pandas as pd
+
+try:
+    from sqlalchemy import create_engine, text
+    from sqlalchemy.orm import sessionmaker
+except ModuleNotFoundError:  # pragma: no cover (tests fallback)
+    create_engine = None
+    text = None
+    sessionmaker = None
+
 
 # ─────────────────────────────────────────────
 # Connexion PostgreSQL
@@ -10,13 +17,18 @@ import pandas as pd
 
 DB_URL = "postgresql+psycopg2://postgres:1234@localhost:5432/ocp_prediction"
 
-engine = create_engine(DB_URL)
+if create_engine is not None and sessionmaker is not None:
+    engine = create_engine(DB_URL)
 
-SessionLocal = sessionmaker(
-    autocommit=False,
-    autoflush=False,
-    bind=engine
-)
+    SessionLocal = sessionmaker(
+        autocommit=False,
+        autoflush=False,
+        bind=engine
+    )
+else:
+    engine = None
+    SessionLocal = None
+
 
 # ─────────────────────────────────────────────
 # Session DB
