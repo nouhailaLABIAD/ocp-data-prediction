@@ -14,10 +14,10 @@ export class DonneeProduction {
   mois!: string;
 
   @Column()
-  activite!: string;  // EXTRACTION, CRIBLAGE, MANUTENTION, STOCKAGE
+  activite!: string; // EXTRACTION, CRIBLAGE, MANUTENTION, STOCKAGE
 
   @Column()
-  zone!: string;      // BOUCHANE, MZINDA, YOUSSOUFIA
+  zone!: string; // BOUCHANE, MZINDA, YOUSSOUFIA
 
   @Column({ type: 'float', default: 0 })
   prevuT!: number;
@@ -34,6 +34,6 @@ export class DonneeProduction {
   @Column({ type: 'float', default: 0 })
   cumulRealiseT!: number;
 
-  @ManyToOne(() => FichierExcel, f => f.productions, { onDelete: 'CASCADE' })
+  @ManyToOne(() => FichierExcel, (f) => f.productions, { onDelete: 'CASCADE' })
   fichier!: FichierExcel;
 }

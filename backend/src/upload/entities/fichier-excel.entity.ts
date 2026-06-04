@@ -1,11 +1,15 @@
 // fichier-excel.entity.ts
 import {
-  Entity, PrimaryGeneratedColumn, Column,
-  CreateDateColumn, ManyToOne, OneToMany,
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  CreateDateColumn,
+  ManyToOne,
+  OneToMany,
 } from 'typeorm';
-import { User }             from '../../users/user.entity';
+import { User } from '../../users/user.entity';
 import { DonneeProduction } from './donnee-production.entity';
-import { PosteCharge }      from './poste-charge.entity';
+import { PosteCharge } from './poste-charge.entity';
 
 @Entity()
 export class FichierExcel {
@@ -19,10 +23,10 @@ export class FichierExcel {
   type!: string;
 
   @Column()
-  mois!: string;   // "Janvier", "Février"...
+  mois!: string; // "Janvier", "Février"...
 
   @Column()
-  annee!: number;  // 2025
+  annee!: number; // 2025
 
   @Column({ default: 'TRAITE' })
   statut!: string;
@@ -33,12 +37,12 @@ export class FichierExcel {
   @CreateDateColumn()
   createdAt!: Date;
 
-  @ManyToOne(() => User, user => user.uploads, { onDelete: 'CASCADE' })
+  @ManyToOne(() => User, (user) => user.uploads, { onDelete: 'CASCADE' })
   user!: User;
 
-  @OneToMany(() => DonneeProduction, dp => dp.fichier, { cascade: true })
+  @OneToMany(() => DonneeProduction, (dp) => dp.fichier, { cascade: true })
   productions!: DonneeProduction[];
 
-  @OneToMany(() => PosteCharge, pc => pc.fichier, { cascade: true })
+  @OneToMany(() => PosteCharge, (pc) => pc.fichier, { cascade: true })
   charges!: PosteCharge[];
 }

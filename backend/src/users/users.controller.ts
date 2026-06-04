@@ -7,19 +7,17 @@ import {
   Body,
   Param,
   UseGuards,
+  Req,              // ✅ AJOUT
 } from '@nestjs/common';
 
 import { UsersService } from './users.service';
-
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 
 @Controller('users')
 export class UsersController {
-  constructor(
-    private usersService: UsersService,
-  ) {}
+  constructor(private usersService: UsersService) {}
 
   @UseGuards(JwtAuthGuard)
   @Get()
@@ -29,23 +27,23 @@ export class UsersController {
 
   @UseGuards(JwtAuthGuard)
   @Post()
-  create(
-    @Body() createUserDto: CreateUserDto,
-  ) {
-    return this.usersService.createUser(
-      createUserDto,
-    );
+  create(@Body() createUserDto: CreateUserDto, @Req() req: any) {   // ✅ AJOUT @Req()
+    return this.usersService.createUser(createUserDto, req.user);    // ✅ passe req.user
   }
+
   @UseGuards(JwtAuthGuard)
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-    return this.usersService.updateUser(Number(id), updateUserDto);
+  update(
+    @Param('id') id: string,
+    @Body() updateUserDto: UpdateUserDto,
+    @Req() req: any,                                                 // ✅ AJOUT @Req()
+  ) {
+    return this.usersService.updateUser(Number(id), updateUserDto, req.user); // ✅ passe req.user
   }
+
   @UseGuards(JwtAuthGuard)
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.usersService.deleteUser(
-      Number(id),
-    );
+  remove(@Param('id') id: string, @Req() req: any) {                // ✅ AJOUT @Req()
+    return this.usersService.deleteUser(Number(id), req.user);       // ✅ passe req.user
   }
 }

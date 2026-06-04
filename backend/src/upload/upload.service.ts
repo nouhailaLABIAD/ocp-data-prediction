@@ -1,34 +1,32 @@
 // upload.service.ts
 
-import {
-  Injectable,
-  BadRequestException,
-} from '@nestjs/common';
+import { Injectable, BadRequestException } from '@nestjs/common';
 
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository }       from 'typeorm';
-import * as XLSX            from 'xlsx';
+import { Repository } from 'typeorm';
+import * as XLSX from 'xlsx';
 
-import { FichierExcel }    from './entities/fichier-excel.entity';
+import { FichierExcel } from './entities/fichier-excel.entity';
 import { DonneeProduction } from './entities/donnee-production.entity';
-import { PosteCharge }      from './entities/poste-charge.entity';
+import { PosteCharge } from './entities/poste-charge.entity';
+import { LogsService } from '../logs/logs.service';
 
 // ===============================
 // Mapping mois -> feuille Excel
 // ===============================
 const MOIS_SHEET_MAP: Record<string, string> = {
-  Janvier:   'Janvier',
-  Février:   'Février',
-  Mars:      'Mars',
-  Avril:     'Avril',
-  Mai:       'Mai',
-  Juin:      'Juin',
-  Juillet:   'Juillet',
-  Août:      'Août',
+  Janvier: 'Janvier',
+  Février: 'Février',
+  Mars: 'Mars',
+  Avril: 'Avril',
+  Mai: 'Mai',
+  Juin: 'Juin',
+  Juillet: 'Juillet',
+  Août: 'Août',
   Septembre: 'Septembre',
-  Octobre:   'Octobre',
-  Novembre:  'Novembre',
-  Décembre:  'Décembre',
+  Octobre: 'Octobre',
+  Novembre: 'Novembre',
+  Décembre: 'Décembre',
 };
 
 // ===============================================================
@@ -50,7 +48,6 @@ const MOIS_SHEET_MAP: Record<string, string> = {
 
 @Injectable()
 export class UploadService {
-
   constructor(
     @InjectRepository(FichierExcel)
     private fichierRepo: Repository<FichierExcel>,
@@ -60,6 +57,7 @@ export class UploadService {
 
     @InjectRepository(PosteCharge)
     private chargeRepo: Repository<PosteCharge>,
+    private logsService: LogsService,
   ) {}
 
   // =====================================================
@@ -67,13 +65,12 @@ export class UploadService {
   // =====================================================
 
   async processExcel(
-    file:  Express.Multer.File,
-    type:  string,
-    mois:  string,
+    file: Express.Multer.File,
+    type: string,
+    mois: string,
     annee: number,
-    user:  any,
+    user: any,
   ) {
-
     // ─── Vérification type MIME ───────────────────────
     const allowedTypes = [
       'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
@@ -94,7 +91,7 @@ export class UploadService {
     if (!workbook.SheetNames.includes(sheetName)) {
       throw new BadRequestException(
         `Feuille "${sheetName}" introuvable.\n` +
-        `Feuilles disponibles : ${workbook.SheetNames.join(', ')}`
+          `Feuilles disponibles : ${workbook.SheetNames.join(', ')}`,
       );
     }
 
@@ -115,7 +112,9 @@ export class UploadService {
     }
 
     if (rows.length === 0) {
-      throw new BadRequestException(`La feuille "${sheetName}" est vide ou les en-têtes sont introuvables`);
+      throw new BadRequestException(
+        `La feuille "${sheetName}" est vide ou les en-têtes sont introuvables`,
+      );
     }
 
     // ─── Vérification doublon ─────────────────────────
@@ -125,7 +124,7 @@ export class UploadService {
     });
     if (existingFile) {
       throw new BadRequestException(
-        `Un fichier ${type} pour ${mois} ${annee} existe déjà.`
+        `Un fichier ${type} pour ${mois} ${annee} existe déjà.`,
       );
     }
 
@@ -140,9 +139,9 @@ export class UploadService {
         type,
         mois,
         annee,
-        statut:   'TRAITE',
+        statut: 'TRAITE',
         nbLignes: 0,
-        user:     { id: user.id },   // FIX userId null
+        user: { id: user.id }, // FIX userId null
       })
       .execute();
 
@@ -171,14 +170,26 @@ export class UploadService {
       .where('id = :id', { id: fichierId })
       .execute();
 
+    // ─── Journalisation ─────────────────────────────────
+    try {
+      await this.logsService.createLog(
+        user,
+        'UPLOAD_FICHIER',
+        'UploadModule',
+        `type=${type}, mois=${mois}, annee=${annee}, lignesLues=${rows.length}, lignesSauvegardees=${lignesSauvegardees}`,
+      );
+    } catch (e) {
+      // Ne casse pas le traitement d'upload
+    }
+
     // ─── Réponse ──────────────────────────────────────
     return {
-      message:            `Fichier ${type} importé avec succès`,
+      message: `Fichier ${type} importé avec succès`,
       fichierId,
       mois,
       annee,
-      feuilleLue:         sheetName,
-      lignesLues:         rows.length,
+      feuilleLue: sheetName,
+      lignesLues: rows.length,
       lignesSauvegardees,
     };
   }
@@ -191,29 +202,27 @@ export class UploadService {
   // =====================================================
 
   private async parseProduction(
-    rows:      any[],
+    rows: any[],
     fichierId: number,
-    mois:      string,
+    mois: string,
   ): Promise<number> {
-
     const values: Partial<DonneeProduction>[] = [];
 
     for (const row of rows) {
-
       // Ignorer lignes sans date ni activité
       if (!row['Date'] || !row['Activité']) continue;
 
       values.push({
-        date:          String(row['Date']),
+        date: String(row['Date']),
         mois,
-        activite:      String(row['Activité']),
-        zone:          String(row['Zone']              ?? ''),
-        prevuT:        Number(row['Prévu/Jour (T)'])   || 0,
-        realiseT:      Number(row['Réalisé/Jour (T)']) || 0,
-        tauxRP:        Number(row['Taux R/P (%)'])      || 0,
-        cumulPrevuT:   Number(row['Cumul Prévu (T)'])   || 0,
+        activite: String(row['Activité']),
+        zone: String(row['Zone'] ?? ''),
+        prevuT: Number(row['Prévu/Jour (T)']) || 0,
+        realiseT: Number(row['Réalisé/Jour (T)']) || 0,
+        tauxRP: Number(row['Taux R/P (%)']) || 0,
+        cumulPrevuT: Number(row['Cumul Prévu (T)']) || 0,
         cumulRealiseT: Number(row['Cumul Réalisé (T)']) || 0,
-        fichier:       { id: fichierId } as FichierExcel,
+        fichier: { id: fichierId } as FichierExcel,
       });
     }
 
@@ -239,30 +248,28 @@ export class UploadService {
   // =====================================================
 
   private async parseCharges(
-    rows:      any[],
+    rows: any[],
     fichierId: number,
-    mois:      string,
+    mois: string,
   ): Promise<number> {
-
     const values: Partial<PosteCharge>[] = [];
 
     for (const row of rows) {
-
       // Ignorer lignes sans date ni poste
       if (!row['Date'] || !row['Poste de charge']) continue;
 
       values.push({
-        date:         String(row['Date']),
+        date: String(row['Date']),
         mois,
-        categorie:    String(row['Catégorie']           ?? ''),
-        poste:        String(row['Poste de charge']),
-        prevuJour:    Number(row['Prévu/Jour (DH)'])    || 0,
-        realiseJour:  Number(row['Réalisé/Jour (DH)'])  || 0,
-        ecartJour:    Number(row['Écart/Jour (DH)'])    || 0,
-        tauxRP:       Number(row['Taux R/P (%)'])        || 0,
-        cumulPrevu:   Number(row['Cumul Prévu (DH)'])    || 0,
-        cumulRealise: Number(row['Cumul Réalisé (DH)'])  || 0,
-        fichier:      { id: fichierId } as FichierExcel,
+        categorie: String(row['Catégorie'] ?? ''),
+        poste: String(row['Poste de charge']),
+        prevuJour: Number(row['Prévu/Jour (DH)']) || 0,
+        realiseJour: Number(row['Réalisé/Jour (DH)']) || 0,
+        ecartJour: Number(row['Écart/Jour (DH)']) || 0,
+        tauxRP: Number(row['Taux R/P (%)']) || 0,
+        cumulPrevu: Number(row['Cumul Prévu (DH)']) || 0,
+        cumulRealise: Number(row['Cumul Réalisé (DH)']) || 0,
+        fichier: { id: fichierId } as FichierExcel,
       });
     }
 

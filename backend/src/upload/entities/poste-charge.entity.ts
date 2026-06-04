@@ -14,10 +14,10 @@ export class PosteCharge {
   mois!: string;
 
   @Column()
-  categorie!: string;  // VARIABLE, FIXE
+  categorie!: string; // VARIABLE, FIXE
 
   @Column()
-  poste!: string;      // Gasoil, Explosifs, PDR...
+  poste!: string; // Gasoil, Explosifs, PDR...
 
   @Column({ type: 'float', default: 0 })
   prevuJour!: number;
@@ -37,6 +37,6 @@ export class PosteCharge {
   @Column({ type: 'float', default: 0 })
   cumulRealise!: number;
 
-  @ManyToOne(() => FichierExcel, f => f.charges, { onDelete: 'CASCADE' })
+  @ManyToOne(() => FichierExcel, (f) => f.charges, { onDelete: 'CASCADE' })
   fichier!: FichierExcel;
 }

@@ -6,14 +6,12 @@ import { UploadService } from './upload.service';
 import { FichierExcel } from './entities/fichier-excel.entity';
 import { DonneeProduction } from './entities/donnee-production.entity';
 import { PosteCharge } from './entities/poste-charge.entity';
+import { LogsModule } from '../logs/logs.module';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([
-      FichierExcel,
-      DonneeProduction,
-      PosteCharge,
-    ]),
+    TypeOrmModule.forFeature([FichierExcel, DonneeProduction, PosteCharge]),
+    LogsModule,
   ],
   controllers: [UploadController],
   providers: [UploadService],

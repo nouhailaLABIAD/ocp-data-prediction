@@ -15,3 +15,12 @@ export const getAnomalies = async () => {
   const res = await fetch(`${AI_URL}/anomalies`);
   return res.json();
 };
+
+export const sendChat = async (messages, mois = null, annee = null) => {
+  const res = await fetch(`${AI_URL}/chat`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ messages, mois, annee }),
+  });
+  return res.json(); // { reply: "..." }
+};

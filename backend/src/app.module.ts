@@ -9,6 +9,9 @@ import { UploadModule } from './upload/upload.module';
 import { FichierExcel } from './upload/entities/fichier-excel.entity';
 import { DonneeProduction } from './upload/entities/donnee-production.entity';
 import { PosteCharge } from './upload/entities/poste-charge.entity';
+import { LogsModule } from './logs/logs.module';
+import { Log } from './logs/entities/log.entity';
+import { DashboardModule } from './dashboard/dashboard.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -24,8 +27,7 @@ import { PosteCharge } from './upload/entities/poste-charge.entity';
         username: config.get('DB_USERNAME'),
         password: config.get('DB_PASSWORD'),
         database: config.get('DB_NAME'),
-        entities: [User,FichierExcel,DonneeProduction,
-        PosteCharge],
+        entities: [User, FichierExcel, DonneeProduction, PosteCharge, Log],
         synchronize: true,
       }),
     }),
@@ -33,6 +35,8 @@ import { PosteCharge } from './upload/entities/poste-charge.entity';
     UsersModule,
     AuthModule,
     UploadModule,
+    LogsModule,
+    DashboardModule,
   ],
 })
 export class AppModule {}
