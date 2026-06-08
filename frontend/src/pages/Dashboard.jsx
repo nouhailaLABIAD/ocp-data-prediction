@@ -1,5 +1,7 @@
 // Dashboard.jsx — OCP Youssoufia · Tableau de bord complet
 // Style original conservé · Nouvelles sections Analyse avec filtres sidebar
+// Tous les émojis remplacés par des icônes react-icons
+
 import '../styles/Dashboard.css';
 import ocpLogo from '../assets/ocp-logo.png';
 import { useNavigate } from 'react-router-dom';
@@ -7,6 +9,16 @@ import axios from 'axios';
 import { useState, useEffect, useRef, useMemo } from 'react';
 import UploadBox from '../components/UploadBox';
 import AIChatbot from '../components/AIChatbot';
+
+// Import des icônes (sélection complète)
+import { 
+  FaMoneyBillWave, FaCogs, FaCheckCircle, FaExclamationTriangle, 
+  FaSearch, FaChartBar, FaChartLine, FaUpload, FaRobot, 
+  FaSignOutAlt, FaEdit, FaRegCalendarAlt, FaDollarSign, 
+  FaBalanceScale, FaClipboardList, FaArrowUp, FaArrowDown, 
+  FaTimes, FaSyncAlt, FaFilter, FaQuestionCircle,
+  FaFileExcel, FaFilePdf, FaRegSave, FaEye, FaEyeSlash, FaLock
+} from 'react-icons/fa';
 
 const API_AI   = 'http://localhost:8000';
 const API_AUTH = 'http://localhost:3000';
@@ -44,7 +56,7 @@ function exportPDF(title,columns,rows,filename){loadJsPDF(jsPDF=>{const doc=new 
 function exportExcel(sheetName,columns,rows,filename){loadXLSX(XLSX=>{const wsData=[columns,...rows];const ws=XLSX.utils.aoa_to_sheet(wsData);const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,sheetName);XLSX.writeFile(wb,`${filename}.xlsx`);});logAction('EXPORT_EXCEL','Dashboard',`fichier=${filename}.xlsx, feuille=${sheetName}`);}
 
 // ═══════════════════════════════════════════════════════════════
-// COMPOSANTS UI — identiques à l'original
+// COMPOSANTS UI
 // ═══════════════════════════════════════════════════════════════
 
 function KpiCard({ label, value, icon, color = G.main, bg = G.pale, trend }) {
@@ -53,7 +65,7 @@ function KpiCard({ label, value, icon, color = G.main, bg = G.pale, trend }) {
       padding:'16px 18px', boxShadow:'0 2px 12px rgba(26,92,28,0.08)',
       fontFamily:'Nunito, sans-serif', minWidth:0, overflow:'hidden' }}>
       <div style={{ display:'flex', alignItems:'center', gap:7, marginBottom:7 }}>
-        <span style={{ fontSize:18, flexShrink:0 }}>{icon}</span>
+        <span style={{ fontSize:18, flexShrink:0, lineHeight:1 }}>{icon}</span>
         <span style={{ fontSize:9.5, fontWeight:800, letterSpacing:1.4,
           textTransform:'uppercase', color:G.muted, lineHeight:1.3 }}>{label}</span>
       </div>
@@ -76,18 +88,17 @@ function ExportBar({ onPDF, onExcel }) {
       <button onClick={onExcel} style={{...btnBase,background:'#e8f5e9',color:G.main,borderColor:G.border}}
         onMouseEnter={e=>e.currentTarget.style.background='#c8e6c9'}
         onMouseLeave={e=>e.currentTarget.style.background='#e8f5e9'}>
-        <span style={{fontSize:13}}>📊</span> Exporter Excel
+        <FaFileExcel style={{ fontSize:13 }} /> Exporter Excel
       </button>
       <button onClick={onPDF} style={{...btnBase,background:'#fdecea',color:G.red,borderColor:'#ef9a9a'}}
         onMouseEnter={e=>e.currentTarget.style.background='#ffcdd2'}
         onMouseLeave={e=>e.currentTarget.style.background='#fdecea'}>
-        <span style={{fontSize:13}}>📄</span> Exporter PDF
+        <FaFilePdf style={{ fontSize:13 }} /> Exporter PDF
       </button>
     </div>
   );
 }
 
-// Section card — style original (borderRadius:20, padding 28/32)
 function Section({ title, icon, badge, children, loading, error, accentColor, padContent=true }) {
   const color = accentColor || G.main;
   return (
@@ -110,7 +121,9 @@ function Section({ title, icon, badge, children, loading, error, accentColor, pa
         <p style={{marginTop:12,fontSize:13,fontWeight:600}}>Chargement…</p>
       </div>}
       {error&&!loading && <div style={{background:'#fdecea',border:'1px solid #f5c6c6',
-        borderRadius:10,padding:'14px 18px',color:G.red,fontSize:13,fontWeight:600,margin:'0 32px'}}>⚠ {error}</div>}
+        borderRadius:10,padding:'14px 18px',color:G.red,fontSize:13,fontWeight:600,margin:'0 32px'}}>
+        <FaExclamationTriangle style={{ marginRight:8, fontSize:14 }} /> {error}
+      </div>}
       {!loading&&!error&&(
         padContent
           ? <div style={{padding:'0 32px'}}>{children}</div>
@@ -120,7 +133,6 @@ function Section({ title, icon, badge, children, loading, error, accentColor, pa
   );
 }
 
-// Selector pills — style original
 function Selector({ items, selected, onChange }) {
   return (
     <div style={{display:'flex',gap:6,flexWrap:'wrap',marginBottom:16}}>
@@ -137,7 +149,6 @@ function Selector({ items, selected, onChange }) {
   );
 }
 
-// Checkbox group pour la sidebar
 function CheckGroup({ title, items, selected, onChange }) {
   const toggle = val => {
     const next = selected.includes(val) ? selected.filter(x=>x!==val) : [...selected,val];
@@ -159,7 +170,7 @@ function CheckGroup({ title, items, selected, onChange }) {
             display:'flex', alignItems:'center', justifyContent:'center',
             transition:'150ms', cursor:'pointer', flexShrink:0,
           }}>
-            {selected.includes(item)&&<span style={{color:G.white,fontSize:9,fontWeight:900,lineHeight:1}}>✓</span>}
+            {selected.includes(item) && <FaCheckCircle style={{ color:G.white, fontSize:9 }} />}
           </div>
           {item}
         </label>
@@ -168,7 +179,6 @@ function CheckGroup({ title, items, selected, onChange }) {
   );
 }
 
-// Légende inline pour les graphiques
 function Legend({ items }) {
   return (
     <div style={{display:'flex',gap:12,flexWrap:'wrap',marginBottom:10}}>
@@ -187,10 +197,9 @@ function Legend({ items }) {
 }
 
 // ═══════════════════════════════════════════════════════════════
-// SVG CHARTS — style Power BI, viewBox responsive
+// GRAPHIQUES SVG
 // ═══════════════════════════════════════════════════════════════
 
-// Barres + ligne dégradé (original)
 function SvgBarChart({ data, dataKey, color=G.main }) {
   const W=520, H=200, padL=55, padR=20, padT=16, padB=36;
   const vals = data.map(d=>d[dataKey]||0);
@@ -223,7 +232,6 @@ function SvgBarChart({ data, dataKey, color=G.main }) {
   );
 }
 
-// Ligne (original)
 function SvgLineChart({ data, dataKey, color=G.main }) {
   const W=520, H=200, padL=55, padR=20, padT=16, padB=36;
   const vals=data.map(d=>d[dataKey]||0);
@@ -255,7 +263,6 @@ function SvgLineChart({ data, dataKey, color=G.main }) {
   );
 }
 
-// Barres groupées + ligne écart — style Power BI
 function GroupedBarLineChart({ data, keyA, keyB, keyLine, colorA=G.dark, colorB=G.light, colorLine=G.yellow }) {
   if (!data.length) return <div style={{textAlign:'center',padding:'30px 0',color:G.muted,fontSize:12}}>Aucune donnée</div>;
   const W=500, H=200, pL=55, pR=20, pT=16, pB=40;
@@ -293,7 +300,6 @@ function GroupedBarLineChart({ data, keyA, keyB, keyLine, colorA=G.dark, colorB=
   );
 }
 
-// Jauge demi-cercle
 function GaugeChart({ value }) {
   const pct=Math.min(Math.max(value||0,0),150);
   const color=pct>=100?G.main:pct>=80?G.amber:G.red;
@@ -317,61 +323,64 @@ function GaugeChart({ value }) {
   );
 }
 
-// Barres horizontales groupées
 function HBarGroupChart({ data }) {
-  const rows=data.slice(0,8);
+  const rows = data.slice(0, 10);
   if (!rows.length) return <div style={{textAlign:'center',padding:'20px 0',color:G.muted,fontSize:12}}>Aucune donnée</div>;
-  const maxV=Math.max(...rows.flatMap(d=>[d.cout_prevu||0,d.cout_realise||0]))*1.1||1;
-  const H=rows.length*32+24, W=400, pL=85, pR=55;
-  const barW=W-pL-pR;
+  const maxV = Math.max(...rows.flatMap(d=>[d.cout_prevu||0,d.cout_realise||0]))*1.1||1;
+  const H = rows.length*38 + 24, W = 450, pL = 110, pR = 70;
+  const barW = W - pL - pR;
   return (
     <svg viewBox={`0 0 ${W} ${H}`} style={{width:'100%',height:'auto',display:'block'}}>
       {rows.map((d,i)=>{
-        const y=12+i*32;
-        const wP=(d.cout_prevu||0)/maxV*barW, wR=(d.cout_realise||0)/maxV*barW;
-        return <g key={i}>
-          <text x={pL-6} y={y+9} textAnchor="end" fontSize={9} fill={G.text} fontWeight={600}>{(d.poste||'').slice(0,10)}</text>
-          <rect x={pL} y={y}    width={wP} height={11} fill={G.light} rx={2} opacity={0.75}/>
-          <rect x={pL} y={y+13} width={wR} height={11} fill={G.dark}  rx={2} opacity={0.9}/>
-          <text x={pL+Math.max(wP,wR)+4} y={y+12} fontSize={8} fill={G.muted}>{fmt(d.cout_prevu)}</text>
-        </g>;
+        const y = 12 + i*38;
+        const wP = (d.cout_prevu||0)/maxV*barW;
+        const wR = (d.cout_realise||0)/maxV*barW;
+        return (
+          <g key={i}>
+            <text x={pL-8} y={y+14} textAnchor="end" fontSize={10} fill={G.text} fontWeight={600}>
+              {d.poste?.length > 18 ? d.poste.slice(0,15)+'…' : d.poste}
+            </text>
+            <rect x={pL} y={y} width={wP} height={13} fill={G.light} rx={2} opacity={0.75}/>
+            <rect x={pL} y={y+16} width={wR} height={13} fill={G.dark} rx={2} opacity={0.9}/>
+            <text x={pL + Math.max(wP,wR) + 6} y={y+12} fontSize={9} fill={G.muted}>{fmt(d.cout_prevu)}</text>
+            <text x={pL + Math.max(wP,wR) + 6} y={y+28} fontSize={9} fill={G.muted}>{fmt(d.cout_realise)}</text>
+          </g>
+        );
       })}
       <line x1={pL} y1={8} x2={pL} y2={H-4} stroke={G.border} strokeWidth={1}/>
     </svg>
   );
 }
 
-// Donut
 function DonutChart({ segments }) {
-  const total=segments.reduce((s,x)=>s+x.value,0)||1;
-  const r=55, cx=75, cy=75;
-  let angle=-90;
-  const arcs=segments.map(seg=>{
-    const sweep=seg.value/total*360;
-    const a1=angle*Math.PI/180, a2=(angle+sweep)*Math.PI/180;
-    const x1=cx+r*Math.cos(a1),y1=cy+r*Math.sin(a1);
-    const x2=cx+r*Math.cos(a2),y2=cy+r*Math.sin(a2);
-    const large=sweep>180?1:0;
-    angle+=sweep;
-    return {...seg,path:`M ${cx} ${cy} L ${x1} ${y1} A ${r} ${r} 0 ${large} 1 ${x2} ${y2} Z`};
+  const total = segments.reduce((s,x)=>s+x.value,0)||1;
+  const r = 60, cx = 90, cy = 75;
+  let angle = -90;
+  const arcs = segments.map(seg => {
+    const sweep = seg.value/total*360;
+    const a1 = angle*Math.PI/180, a2 = (angle+sweep)*Math.PI/180;
+    const x1 = cx + r*Math.cos(a1), y1 = cy + r*Math.sin(a1);
+    const x2 = cx + r*Math.cos(a2), y2 = cy + r*Math.sin(a2);
+    const large = sweep>180?1:0;
+    angle += sweep;
+    return {...seg, path: `M ${cx} ${cy} L ${x1} ${y1} A ${r} ${r} 0 ${large} 1 ${x2} ${y2} Z`};
   });
   return (
-    <svg viewBox="0 0 200 160" style={{width:'100%',height:'auto',display:'block'}}>
+    <svg viewBox="0 0 340 160" style={{width:'100%',height:'auto',display:'block'}}>
       {arcs.map((a,i)=><path key={i} d={a.path} fill={a.color} opacity={0.88}/>)}
-      <circle cx={cx} cy={cy} r={33} fill={G.white}/>
-      <text x={cx} y={cy+5} textAnchor="middle" fontSize={10} fontWeight={800} fill={G.dark} fontFamily="Nunito,sans-serif">{fmt(total)}</text>
+      <circle cx={cx} cy={cy} r={35} fill={G.white}/>
+      <text x={cx} y={cy+5} textAnchor="middle" fontSize={12} fontWeight={800} fill={G.dark} fontFamily="Nunito,sans-serif">{fmt(total)}</text>
       {segments.map((s,i)=>(
         <g key={i}>
-          <rect x={148} y={40+i*28} width={10} height={10} fill={s.color} rx={2}/>
-          <text x={162} y={50+i*28} fontSize={9} fill={G.text} fontFamily="Nunito,sans-serif">{s.label}</text>
-          <text x={162} y={62+i*28} fontSize={8} fill={G.muted} fontFamily="Nunito,sans-serif">{fmt(s.value)} ({(s.value/total*100).toFixed(1)}%)</text>
+          <rect x={180} y={20+i*28} width={12} height={12} fill={s.color} rx={2}/>
+          <text x={198} y={31+i*28} fontSize={10} fontWeight={600} fill={G.text} fontFamily="Nunito,sans-serif">{s.label}</text>
+          <text x={198} y={45+i*28} fontSize={9} fill={G.muted} fontFamily="Nunito,sans-serif">{fmt(s.value)} ({(s.value/total*100).toFixed(1)}%)</text>
         </g>
       ))}
     </svg>
   );
 }
 
-// Aires superposées
 function AreaChart({ data, keyA, keyB, colorA=G.dark, colorB=G.light }) {
   if (!data.length) return <div style={{textAlign:'center',padding:'20px 0',color:G.muted,fontSize:12}}>Aucune donnée</div>;
   const W=500, H=180, pL=50, pR=15, pT=12, pB=36;
@@ -398,7 +407,6 @@ function AreaChart({ data, keyA, keyB, colorA=G.dark, colorB=G.light }) {
   );
 }
 
-// Lignes doubles
 function LineChartDouble({ data, keyA, keyB, colorA=G.dark, colorB=G.light }) {
   if (!data.length) return <div style={{textAlign:'center',padding:'20px 0',color:G.muted,fontSize:12}}>Aucune donnée</div>;
   const W=500, H=180, pL=50, pR=15, pT=12, pB=36;
@@ -430,7 +438,6 @@ function LineChartDouble({ data, keyA, keyB, colorA=G.dark, colorB=G.light }) {
   );
 }
 
-// Barres verticales simples
 function SimpleBarChart({ data, valueKey, labelKey='site', color=G.main }) {
   if (!data.length) return <div style={{textAlign:'center',padding:'20px 0',color:G.muted,fontSize:12}}>Aucune donnée</div>;
   const W=300, H=180, pL=50, pR=15, pT=12, pB=36;
@@ -457,29 +464,37 @@ function SimpleBarChart({ data, valueKey, labelKey='site', color=G.main }) {
   );
 }
 
-// Barres empilées horizontales
 function StackedHBar({ data, keys, colors, labelKey='mois' }) {
   if (!data.length) return <div style={{textAlign:'center',padding:'20px 0',color:G.muted,fontSize:12}}>Aucune donnée</div>;
-  const totals=data.map(d=>keys.reduce((s,k)=>s+(d[k]||0),0));
-  const maxT=Math.max(...totals)*1.05||1;
-  const H=data.length*28+24, W=400, pL=75, pR=60;
-  const barW=W-pL-pR;
+  const totals = data.map(d=>keys.reduce((s,k)=>s+(d[k]||0),0));
+  const maxT = Math.max(...totals)*1.05||1;
+  const H = data.length*30 + 24, W = 420, pL = 55, pR = 65;
+  const barW = W - pL - pR;
   return (
     <svg viewBox={`0 0 ${W} ${H}`} style={{width:'100%',height:'auto',display:'block'}}>
       {data.map((d,i)=>{
-        const y=12+i*28; let x=pL;
-        return <g key={i}>
-          <text x={pL-6} y={y+10} textAnchor="end" fontSize={9} fill={G.text} fontWeight={600}>{(d[labelKey]||'').slice(0,3)}</text>
-          {keys.map((k,j)=>{const w=(d[k]||0)/maxT*barW; const rect=<rect key={k} x={x} y={y} width={w} height={16} fill={colors[j]} rx={j===0?3:0} opacity={0.85}/>; x+=w; return rect;})}
-          <text x={pL+totals[i]/maxT*barW+4} y={y+11} fontSize={8} fill={G.muted}>{fmt(totals[i])}</text>
-        </g>;
+        const y = 10 + i*30;
+        let x = pL;
+        return (
+          <g key={i}>
+            <text x={pL-6} y={y+11} textAnchor="end" fontSize={10} fill={G.text} fontWeight={600}>
+              {(d[labelKey]||'').slice(0,3)}
+            </text>
+            {keys.map((k,j)=>{
+              const w = (d[k]||0)/maxT*barW;
+              const rect = <rect key={k} x={x} y={y} width={w} height={16} fill={colors[j]} rx={j===0?3:0} opacity={0.85}/>;
+              x += w;
+              return rect;
+            })}
+            <text x={pL+totals[i]/maxT*barW+5} y={y+11} fontSize={9} fill={G.muted}>{fmt(totals[i])}</text>
+          </g>
+        );
       })}
-      <line x1={pL} y1={8} x2={pL} y2={H-4} stroke={G.border} strokeWidth={1}/>
+      <line x1={pL} y1={6} x2={pL} y2={H-6} stroke={G.border} strokeWidth={1}/>
     </svg>
   );
 }
 
-// Graphique prévision ML — barres historiques + prévues hachurées + bande IC + ligne tendance
 function PrevisionBarChart({ historique, previsions, valueKeyH='cout_prevu', valueKeyP='cout_prevu' }) {
   const all=[...historique,...previsions];
   if (!all.length) return <div style={{textAlign:'center',padding:'30px 0',color:G.muted,fontSize:12}}>Aucune donnée</div>;
@@ -505,23 +520,19 @@ function PrevisionBarChart({ historique, previsions, valueKeyH='cout_prevu', val
         const y=pT+(i/ticks)*iH; const v=maxV*(1-i/ticks);
         return <g key={i}><line x1={pL} y1={y} x2={W-pR} y2={y} stroke={G.border} strokeWidth={0.5} strokeDasharray="3,3"/><text x={pL-4} y={y+4} textAnchor="end" fontSize={8} fill={G.muted}>{fmt(v)}</text></g>;
       })}
-      {/* Séparateur */}
       {historique.length>0&&previsions.length>0&&(
         <line x1={pL+historique.length*step-step/2} y1={pT} x2={pL+historique.length*step-step/2} y2={H-pB} stroke={G.amber} strokeWidth={1.5} strokeDasharray="5,3"/>
       )}
-      {/* Bande intervalle confiance */}
       {previsions.length>1&&(
         <polygon points={[
           ...previsions.map((d,i)=>`${pL+(historique.length+i)*step+step/2},${yV(d.intervalle_haut||d[valueKeyP]||0)}`),
           ...previsions.slice().reverse().map((d,i)=>`${pL+(historique.length+previsions.length-1-i)*step+step/2},${yV(d.intervalle_bas||0)}`),
         ].join(' ')} fill={G.light} opacity={0.12}/>
       )}
-      {/* Barres historiques — vert foncé */}
       {historique.map((d,i)=>{
         const h=(d[valueKeyH]||0)/maxV*iH, cx=pL+i*step+step/2;
         return <rect key={i} x={cx-bW/2} y={yV(d[valueKeyH]||0)} width={bW} height={h} fill={G.dark} rx={3} opacity={0.9}/>;
       })}
-      {/* Barres prévisions — vert clair + hachures */}
       {previsions.map((d,i)=>{
         const h=(d[valueKeyP]||0)/maxV*iH, cx=pL+(historique.length+i)*step+step/2;
         return <g key={i}>
@@ -530,14 +541,12 @@ function PrevisionBarChart({ historique, previsions, valueKeyH='cout_prevu', val
           <text x={cx} y={yV(d[valueKeyP]||0)-4} textAnchor="middle" fontSize={7} fill={G.mid} fontWeight={700}>Prévu</text>
         </g>;
       })}
-      {/* Ligne de tendance */}
       {all.length>1&&(
         <polyline points={all.map((d,i)=>{
           const v=i<historique.length?(d[valueKeyH]||0):(d[valueKeyP]||0);
           return `${pL+i*step+step/2},${yV(v)}`;
         }).join(' ')} fill="none" stroke={G.yellow} strokeWidth={1.5} strokeDasharray="5,3"/>
       )}
-      {/* Labels X */}
       {all.map((d,i)=><text key={i} x={pL+i*step+step/2} y={H-pB+13} textAnchor="middle" fontSize={8} fill={G.muted}>{(d.mois||'').slice(0,3)}</text>)}
       <line x1={pL} y1={pT} x2={pL} y2={H-pB} stroke={G.border} strokeWidth={1}/>
       <line x1={pL} y1={H-pB} x2={W-pR} y2={H-pB} stroke={G.border} strokeWidth={1}/>
@@ -545,7 +554,6 @@ function PrevisionBarChart({ historique, previsions, valueKeyH='cout_prevu', val
   );
 }
 
-// Bar chart anomalies par mois (empilé rouge/orange)
 function AnoBarChart({ data }) {
   const byM={};
   data.forEach(d=>{
@@ -583,7 +591,7 @@ function AnoBarChart({ data }) {
 }
 
 // ═══════════════════════════════════════════════════════════════
-// MODAL PROFIL — identique à l'original
+// MODAL PROFIL
 // ═══════════════════════════════════════════════════════════════
 const inputStyle = {
   width:'100%', padding:'10px 14px', borderRadius:10,
@@ -638,18 +646,18 @@ function ProfileModal({ user, onClose, onSaved }) {
             </div>
           </div>
           <button onClick={onClose} style={{background:'#ffffff20',border:'none',borderRadius:8,color:G.white,width:32,height:32,cursor:'pointer',display:'flex',alignItems:'center',justifyContent:'center',fontSize:16,transition:'150ms'}}
-            onMouseEnter={e=>e.currentTarget.style.background='#ffffff35'} onMouseLeave={e=>e.currentTarget.style.background='#ffffff20'}>✕</button>
+            onMouseEnter={e=>e.currentTarget.style.background='#ffffff35'} onMouseLeave={e=>e.currentTarget.style.background='#ffffff20'}><FaTimes /></button>
         </div>
         <div style={{ padding:'24px 24px 28px' }}>
           {success ? (
             <div style={{textAlign:'center',padding:'32px 16px',animation:'fadeIn 0.3s ease both'}}>
-              <div style={{fontSize:48,marginBottom:12}}>✅</div>
+              <FaCheckCircle style={{ fontSize:48, color:G.main, marginBottom:12 }} />
               <p style={{fontWeight:800,fontSize:16,color:G.main}}>Profil mis à jour !</p>
               <p style={{fontSize:13,color:G.muted,marginTop:4}}>Vos informations ont été enregistrées.</p>
             </div>
           ) : (
             <form onSubmit={handleSubmit}>
-              {error && <div style={{background:'#fdecea',border:'1px solid #f5c6c6',borderRadius:10,padding:'10px 14px',marginBottom:18,color:G.red,fontSize:13,fontWeight:600}}>⚠ {error}</div>}
+              {error && <div style={{background:'#fdecea',border:'1px solid #f5c6c6',borderRadius:10,padding:'10px 14px',marginBottom:18,color:G.red,fontSize:13,fontWeight:600}}><FaExclamationTriangle style={{marginRight:8}} /> {error}</div>}
               {[{name:'fullname',label:'Nom complet',type:'text',ph:'Prénom Nom'},{name:'email',label:'Adresse email',type:'email',ph:'prenom.nom@ocpgroup.ma'}].map(f=>(
                 <div key={f.name} style={{marginBottom:16}}>
                   <label style={{display:'block',fontSize:11,fontWeight:800,letterSpacing:1.2,textTransform:'uppercase',color:G.mid,marginBottom:6}}>{f.label}</label>
@@ -676,10 +684,11 @@ function ProfileModal({ user, onClose, onSaved }) {
 }
 
 // ═══════════════════════════════════════════════════════════════
-// SECTION ANALYSE CHARGES — sidebar + 6 graphiques
+// SECTION ANALYSE CHARGES
 // ═══════════════════════════════════════════════════════════════
 function AnalyseChargesSection() {
   const [raw, setRaw]       = useState([]);
+  const [prodRaw, setProdRaw] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError]   = useState(null);
   const [selMois, setSelMois]   = useState([]);
@@ -687,21 +696,31 @@ function AnalyseChargesSection() {
   const [selStade, setSelStade] = useState([]);
 
   useEffect(() => {
-  const token = localStorage.getItem('token');
-  fetch(`${API_AUTH}/dashboard/charges`, {
-    headers: { Authorization: `Bearer ${token}` },
-  })
-    .then(r => { if (!r.ok) throw new Error(`HTTP ${r.status}`); return r.json(); })
-    .then(j => {
-      const d = j.data ?? [];
-      setRaw(d);
-      setSelMois([...new Set(d.map(x => x.mois))]);
-      setSelSite([...new Set(d.map(x => x.site).filter(Boolean))]);
-      setSelStade([...new Set(d.map(x => x.stade).filter(Boolean))]);
-      setLoading(false);
+    const token = localStorage.getItem('token');
+    fetch(`${API_AUTH}/dashboard/charges`, {
+      headers: { Authorization: `Bearer ${token}` },
     })
-    .catch(e => { setError(e.message); setLoading(false); });
-}, []);
+      .then(r => { if (!r.ok) throw new Error(`HTTP ${r.status}`); return r.json(); })
+      .then(j => {
+        const d = j.data ?? [];
+        setRaw(d);
+        setSelMois([...new Set(d.map(x => x.mois))]);
+        setSelSite([...new Set(d.map(x => x.site).filter(Boolean))]);
+        setSelStade([...new Set(d.map(x => x.stade).filter(Boolean))]);
+        setLoading(false);
+      })
+      .catch(e => { setError(e.message); setLoading(false); });
+  }, []);
+
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    fetch(`${API_AUTH}/dashboard/production`, {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+      .then(r => r.json())
+      .then(j => setProdRaw(j.data ?? []))
+      .catch(console.warn);
+  }, []);
 
   const allMois  = useMemo(()=>[...new Set(raw.map(x=>x.mois))].sort((a,b)=>MOIS_ORDER.indexOf(a)-MOIS_ORDER.indexOf(b)),[raw]);
   const allSites = useMemo(()=>[...new Set(raw.map(x=>x.site).filter(Boolean))],[raw]);
@@ -712,6 +731,27 @@ function AnalyseChargesSection() {
     (!d.site  ||selSite.length===0 ||selSite.includes(d.site))  &&
     (!d.stade ||selStade.length===0||selStade.includes(d.stade))
   ),[raw,selMois,selSite,selStade]);
+
+  const tonnageByMonth = useMemo(() => {
+    const map = new Map();
+    prodRaw.forEach(p => {
+      const m = p.mois;
+      if (!m) return;
+      const ton = p.tonnage_realise || 0;
+      map.set(m, (map.get(m) || 0) + ton);
+    });
+    return map;
+  }, [prodRaw]);
+
+  const kpis = useMemo(()=>{
+    const tR = filtered.reduce((s,d)=>s+(d.cout_realise||0),0);
+    const tP = filtered.reduce((s,d)=>s+(d.cout_prevu||0),0);
+    let ton = 0;
+    selMois.forEach(m => {
+      ton += tonnageByMonth.get(m) || 0;
+    });
+    return{tR,tP,ton, taux:tP>0?(tR/tP)*100:0, pr:ton>0?tR/ton:0};
+  },[filtered, selMois, tonnageByMonth]);
 
   const byMois = useMemo(()=>{
     const m={};
@@ -725,20 +765,26 @@ function AnalyseChargesSection() {
   },[filtered]);
 
   const byPoste = useMemo(()=>{
-    const m={};
+    const m = {};
     filtered.forEach(d=>{
-      if(!m[d.poste]) m[d.poste]={poste:d.poste,cout_realise:0,cout_prevu:0};
-      m[d.poste].cout_realise+=d.cout_realise||0;
-      m[d.poste].cout_prevu  +=d.cout_prevu||0;
+      if(!m[d.poste]) m[d.poste] = { poste: d.poste, cout_realise: 0, cout_prevu: 0 };
+      m[d.poste].cout_realise += d.cout_realise || 0;
+      m[d.poste].cout_prevu   += d.cout_prevu || 0;
     });
-    return Object.values(m).sort((a,b)=>b.cout_prevu-a.cout_prevu);
+    return Object.values(m).sort((a,b)=>b.cout_prevu - a.cout_prevu);
   },[filtered]);
 
-  const kpis = useMemo(()=>{
-    const tR=filtered.reduce((s,d)=>s+(d.cout_realise||0),0);
-    const tP=filtered.reduce((s,d)=>s+(d.cout_prevu||0),0);
-    const ton=filtered.reduce((s,d)=>s+(d.tonnage||d.tonnage_realise||0),0);
-    return{tR,tP,ton,taux:tP>0?(tR/tP)*100:0,pr:ton>0?tR/ton:0};
+  const consoReelle = useMemo(()=>{
+    const map = new Map();
+    filtered.forEach(d=>{
+      if (!d.mois) return;
+      if (!map.has(d.mois)) map.set(d.mois, { mois: d.mois, gasoil: 0, explosifs: 0, energie: 0 });
+      const entry = map.get(d.mois);
+      if (d.poste === 'Gasoil') entry.gasoil += d.cout_realise || 0;
+      else if (d.poste === 'Explosifs') entry.explosifs += d.cout_realise || 0;
+      else if (d.poste === 'Energie électrique') entry.energie += d.cout_realise || 0;
+    });
+    return sortByMois(Array.from(map.values()));
   },[filtered]);
 
   const donutSegs = useMemo(()=>{
@@ -749,25 +795,19 @@ function AnalyseChargesSection() {
     ];
   },[kpis]);
 
-  const consoData = useMemo(()=>byMois.map(d=>({
-    mois:d.mois, energie:d.cout_realise*0.35, explosif:d.cout_realise*0.30, gasoil:d.cout_realise*0.35,
-  })),[byMois]);
-
   const COLS = ['Mois','Réalisé (MAD)','Prévu (MAD)','Écart (MAD)'];
   const rows  = () => byMois.map(d=>[d.mois,fmtNum(d.cout_realise),fmtNum(d.cout_prevu),fmtNum(d.ecart)]);
 
   return (
-    <Section title="Analyse des Charges Réelles" icon="💰"
+    <Section title="Analyse des Charges Réelles" icon={<FaMoneyBillWave />}
       badge={`${filtered.length} lignes`} loading={loading} error={error} padContent={false}>
       {!loading&&!error&&(
         <div style={{display:'flex',gap:0,margin:'0'}}>
-
-          {/* ── SIDEBAR FILTRES ── */}
           <div style={{width:180,flexShrink:0,borderRight:`1.5px solid ${G.pale}`,
             padding:'20px 16px 20px 16px',background:'#fafef9',borderRadius:'0 0 0 20px'}}>
             <div style={{fontSize:10,fontWeight:900,letterSpacing:1.5,textTransform:'uppercase',
               color:G.dark,marginBottom:16,display:'flex',alignItems:'center',gap:5}}>
-              🔽 Filtres
+              <FaFilter /> Filtres
             </div>
             {allMois.length>0  &&<CheckGroup title="Mois"  items={allMois}   selected={selMois}   onChange={v=>setSelMois(v.length?v:[...allMois])}/>}
             {allSites.length>0 &&<CheckGroup title="Site"  items={allSites}  selected={selSite}   onChange={v=>setSelSite(v.length?v:[...allSites])}/>}
@@ -775,26 +815,23 @@ function AnalyseChargesSection() {
             <button onClick={()=>{setSelMois([...allMois]);setSelSite([...allSites]);setSelStade([...allStades]);}} style={{
               marginTop:12,width:'100%',padding:'7px',borderRadius:8,border:`1.5px solid ${G.border}`,
               background:G.pale,color:G.muted,fontSize:11,fontWeight:700,cursor:'pointer',fontFamily:'Nunito,sans-serif'}}>
-              ↺ Réinitialiser
+              <FaSyncAlt style={{ marginRight:5, fontSize:10 }} /> Réinitialiser
             </button>
           </div>
 
-          {/* ── CONTENU ── */}
           <div style={{flex:1,padding:'0 24px 0 24px',minWidth:0,overflow:'hidden'}}>
-            {/* KPIs */}
             <div style={{display:'grid',gridTemplateColumns:'repeat(4,1fr)',gap:14,marginBottom:20,paddingTop:4}}>
-              <KpiCard label="PR Réalisé" value={`${kpis.pr.toFixed(2)} DH/T`} icon="📐" trend="Coût par tonne réalisé"/>
-              <KpiCard label="Charges Réalisées" value={fmt(kpis.tR)} icon="💰" trend="Total période filtrée"/>
-              <KpiCard label="Tonnage Total" value={fmt(kpis.ton,'T')} icon="⚖️" color={G.blue} bg={G.bluePale} trend="Réalisé"/>
+              <KpiCard label="PR Réalisé" value={`${kpis.pr.toFixed(2)} DH/T`} icon={<FaDollarSign />} trend="Coût par tonne réalisé"/>
+              <KpiCard label="Charges Réalisées" value={fmt(kpis.tR)} icon={<FaMoneyBillWave />} trend="Total période filtrée"/>
+              <KpiCard label="Tonnage Total" value={fmt(kpis.ton,'T')} icon={<FaBalanceScale />} color={G.blue} bg={G.bluePale} trend="Réalisé"/>
               <KpiCard label="Taux Exécution"
                 value={`${kpis.taux.toFixed(2)}%`}
-                icon={kpis.taux>=100?'✅':kpis.taux>=80?'⚠️':'🔴'}
+                icon={kpis.taux>=100 ? <FaCheckCircle /> : kpis.taux>=80 ? <FaExclamationTriangle /> : <FaTimes />}
                 color={kpis.taux>=100?G.main:kpis.taux>=80?G.amber:G.red}
                 bg={kpis.taux>=100?G.pale:kpis.taux>=80?'#fff8e1':'#fdecea'}
                 trend="Réalisé / Prévu × 100%"/>
             </div>
 
-            {/* Rangée 1 */}
             <div style={{display:'grid',gridTemplateColumns:'1fr 180px 1fr',gap:12,marginBottom:12}}>
               <div style={{background:G.pale,borderRadius:12,padding:'14px 16px',border:`1px solid ${G.border}`}}>
                 <div style={{fontSize:11,fontWeight:800,color:G.dark,marginBottom:8}}>Prix de Revient : Réalisé vs Prévu vs Écart</div>
@@ -812,7 +849,6 @@ function AnalyseChargesSection() {
               </div>
             </div>
 
-            {/* Rangée 2 */}
             <div style={{display:'grid',gridTemplateColumns:'1fr 200px 1fr',gap:12}}>
               <div style={{background:G.pale,borderRadius:12,padding:'14px 16px',border:`1px solid ${G.border}`}}>
                 <div style={{fontSize:11,fontWeight:800,color:G.dark,marginBottom:8}}>Temps de Mobilisation des Machines</div>
@@ -825,8 +861,8 @@ function AnalyseChargesSection() {
               </div>
               <div style={{background:G.pale,borderRadius:12,padding:'14px 16px',border:`1px solid ${G.border}`}}>
                 <div style={{fontSize:11,fontWeight:800,color:G.dark,marginBottom:8}}>Consommations Spécifiques par Mois</div>
-                <Legend items={[{color:G.main,label:'Énergie'},{color:G.mid,label:'Explosif'},{color:G.light,label:'Gasoil'}]}/>
-                <StackedHBar data={consoData} keys={['energie','explosif','gasoil']} colors={[G.main,G.mid,G.light]}/>
+                <Legend items={[{color:G.main,label:'Gasoil'},{color:G.mid,label:'Explosifs'},{color:G.light,label:'Énergie'}]}/>
+                <StackedHBar data={consoReelle} keys={['gasoil','explosifs','energie']} colors={[G.main,G.mid,G.light]} labelKey="mois"/>
               </div>
             </div>
 
@@ -845,7 +881,7 @@ function AnalyseChargesSection() {
 }
 
 // ═══════════════════════════════════════════════════════════════
-// SECTION ANALYSE PRODUCTION — sidebar + 6 graphiques
+// SECTION ANALYSE PRODUCTION
 // ═══════════════════════════════════════════════════════════════
 function AnalyseProductionSection() {
   const [raw, setRaw]         = useState([]);
@@ -856,21 +892,21 @@ function AnalyseProductionSection() {
   const [selQual, setSelQual]   = useState([]);
 
   useEffect(() => {
-  const token = localStorage.getItem('token');
-  fetch(`${API_AUTH}/dashboard/production`, {
-    headers: { Authorization: `Bearer ${token}` },
-  })
-    .then(r => { if (!r.ok) throw new Error(`HTTP ${r.status}`); return r.json(); })
-    .then(j => {
-      const d = j.data ?? [];
-      setRaw(d);
-      setSelMois([...new Set(d.map(x => x.mois))]);
-      setSelSite([...new Set(d.map(x => x.site).filter(Boolean))]);
-      setSelQual([...new Set(d.map(x => x.qualite).filter(Boolean))]);
-      setLoading(false);
+    const token = localStorage.getItem('token');
+    fetch(`${API_AUTH}/dashboard/production`, {
+      headers: { Authorization: `Bearer ${token}` },
     })
-    .catch(e => { setError(e.message); setLoading(false); });
-}, []);
+      .then(r => { if (!r.ok) throw new Error(`HTTP ${r.status}`); return r.json(); })
+      .then(j => {
+        const d = j.data ?? [];
+        setRaw(d);
+        setSelMois([...new Set(d.map(x => x.mois))]);
+        setSelSite([...new Set(d.map(x => x.site).filter(Boolean))]);
+        setSelQual([...new Set(d.map(x => x.qualite).filter(Boolean))]);
+        setLoading(false);
+      })
+      .catch(e => { setError(e.message); setLoading(false); });
+  }, []);
 
   const allMois  = useMemo(()=>[...new Set(raw.map(x=>x.mois))].sort((a,b)=>MOIS_ORDER.indexOf(a)-MOIS_ORDER.indexOf(b)),[raw]);
   const allSites = useMemo(()=>[...new Set(raw.map(x=>x.site).filter(Boolean))]   ,[raw]);
@@ -913,18 +949,6 @@ function AnalyseProductionSection() {
     return Object.values(m);
   },[filtered]);
 
-  const byQualVoyages = useMemo(()=>{
-    const m={};
-    filtered.forEach(d=>{if(!d.qualite)return;if(!m[d.qualite])m[d.qualite]={qualite:d.qualite,tonnage_realise:0,nbre_voyages:0,cycle_moyen:0,cnt:0};m[d.qualite].tonnage_realise+=d.tonnage_realise||0;m[d.qualite].nbre_voyages+=d.nbre_voyages||0;m[d.qualite].cycle_moyen+=d.cycle_moyen||0;m[d.qualite].cnt++;});
-    return Object.values(m).map(x=>({...x,cycle_moyen:x.cnt>0?x.cycle_moyen/x.cnt:0}));
-  },[filtered]);
-
-  const cycleBySite = useMemo(()=>{
-    const m={};
-    filtered.forEach(d=>{if(!d.site)return;if(!m[d.site])m[d.site]={site:d.site,cycle_moyen:0,cnt:0};m[d.site].cycle_moyen+=d.cycle_moyen||0;m[d.site].cnt++;});
-    return Object.values(m).map(x=>({...x,cycle_moyen:x.cnt>0?x.cycle_moyen/x.cnt:0}));
-  },[filtered]);
-
   const kpis = useMemo(()=>{
     const tR=filtered.reduce((s,d)=>s+(d.tonnage_realise||0),0);
     const tP=filtered.reduce((s,d)=>s+(d.tonnage_prevu||0),0);
@@ -935,47 +959,43 @@ function AnalyseProductionSection() {
   const rows=()=>byMois.map(d=>[d.mois,fmtNum(d.tonnage_realise),fmtNum(d.tonnage_prevu),fmtNum(d.ecart)]);
 
   return (
-    <Section title="Analyse de la Production Réelle" icon="⚙️"
+    <Section title="Analyse de la Production Réelle" icon={<FaCogs />}
       badge={`${filtered.length} lignes`} loading={loading} error={error} accentColor={G.blue} padContent={false}>
       {!loading&&!error&&(
         <div style={{display:'flex',gap:0,margin:'0'}}>
           <div style={{width:180,flexShrink:0,borderRight:`1.5px solid ${G.pale}`,
             padding:'20px 16px 20px 16px',background:'#fafef9',borderRadius:'0 0 0 20px'}}>
-            <div style={{fontSize:10,fontWeight:900,letterSpacing:1.5,textTransform:'uppercase',color:G.dark,marginBottom:16,display:'flex',alignItems:'center',gap:5}}>🔽 Filtres</div>
+            <div style={{fontSize:10,fontWeight:900,letterSpacing:1.5,textTransform:'uppercase',color:G.dark,marginBottom:16,display:'flex',alignItems:'center',gap:5}}><FaFilter /> Filtres</div>
             {allMois.length>0  &&<CheckGroup title="Mois"    items={allMois}  selected={selMois} onChange={v=>setSelMois(v.length?v:[...allMois])}/>}
             {allQuals.length>0 &&<CheckGroup title="Qualité" items={allQuals} selected={selQual} onChange={v=>setSelQual(v.length?v:[...allQuals])}/>}
             {allSites.length>0 &&<CheckGroup title="Site"    items={allSites} selected={selSite} onChange={v=>setSelSite(v.length?v:[...allSites])}/>}
-            <button onClick={()=>{setSelMois([...allMois]);setSelSite([...allSites]);setSelQual([...allQuals]);}} style={{marginTop:12,width:'100%',padding:'7px',borderRadius:8,border:`1.5px solid ${G.border}`,background:G.pale,color:G.muted,fontSize:11,fontWeight:700,cursor:'pointer',fontFamily:'Nunito,sans-serif'}}>↺ Réinitialiser</button>
+            <button onClick={()=>{setSelMois([...allMois]);setSelSite([...allSites]);setSelQual([...allQuals]);}} style={{marginTop:12,width:'100%',padding:'7px',borderRadius:8,border:`1.5px solid ${G.border}`,background:G.pale,color:G.muted,fontSize:11,fontWeight:700,cursor:'pointer',fontFamily:'Nunito,sans-serif'}}><FaSyncAlt style={{ marginRight:5, fontSize:10 }} /> Réinitialiser</button>
           </div>
 
-          {/* ── CONTENU ── */}
           <div style={{flex:1,padding:'0 24px 0 24px',minWidth:0,overflow:'hidden'}}>
-            {/* KPIs */}
             <div style={{display:'grid',gridTemplateColumns:'repeat(4,1fr)',gap:14,marginBottom:16,paddingTop:4}}>
               <KpiCard label="Taux Réalisation"
                 value={`${kpis.taux.toFixed(2)}%`}
-                icon={kpis.taux>=100?'✅':'⚠️'}
+                icon={kpis.taux>=100 ? <FaCheckCircle /> : <FaExclamationTriangle />}
                 color={kpis.taux>=100?G.main:G.amber}
                 bg={kpis.taux>=100?G.pale:'#fff8e1'}/>
-              <KpiCard label="Total Réalisé" value={fmt(kpis.tR,'T')} icon="✅" trend="Tonnes réalisées"/>
-              <KpiCard label="Total Prévu" value={fmt(kpis.tP,'T')} icon="📋" color={G.blue} bg={G.bluePale}/>
+              <KpiCard label="Total Réalisé" value={fmt(kpis.tR,'T')} icon={<FaCheckCircle />} trend="Tonnes réalisées"/>
+              <KpiCard label="Total Prévu" value={fmt(kpis.tP,'T')} icon={<FaClipboardList />} color={G.blue} bg={G.bluePale}/>
               <KpiCard label="Écart Production"
                 value={`${kpis.ecart>=0?'▲':'▼'} ${fmt(Math.abs(kpis.ecart),'T')}`}
-                icon={kpis.ecart>=0?'📈':'📉'}
+                icon={kpis.ecart>=0 ? <FaArrowUp /> : <FaArrowDown />}
                 color={kpis.ecart>=0?G.main:G.red}
                 bg={kpis.ecart>=0?G.pale:'#fdecea'}/>
             </div>
-            {/* Bannière performance */}
             {kpis.taux>=100&&(
               <div style={{background:`linear-gradient(90deg,${G.pale},${G.pale2})`,border:`1.5px solid ${G.mid}`,borderRadius:12,padding:'12px 18px',marginBottom:14,display:'flex',alignItems:'center',gap:10}}>
-                <span style={{fontSize:18}}>✅</span>
+                <FaCheckCircle style={{ fontSize:18, color:G.main }} />
                 <div>
                   <span style={{fontWeight:900,fontSize:13,color:G.dark}}>Excellente performance ! </span>
                   <span style={{fontWeight:700,fontSize:12,color:G.main}}>Dépassement de {fmt(Math.abs(kpis.ecart),'T')} au-dessus du prévu.</span>
                 </div>
               </div>
             )}
-            {/* Rangée 1 */}
             <div style={{display:'grid',gridTemplateColumns:'1fr 1fr 1fr',gap:12,marginBottom:12}}>
               <div style={{background:G.pale,borderRadius:12,padding:'14px 16px',border:`1px solid ${G.border}`}}>
                 <div style={{fontSize:11,fontWeight:800,color:G.dark,marginBottom:8}}>Extraction : Réalisé VS Prévu</div>
@@ -993,22 +1013,19 @@ function AnalyseProductionSection() {
                 <LineChartDouble data={byActivite.criblage} keyA="tonnage_realise" keyB="tonnage_prevu" colorA={G.dark} colorB={G.light}/>
               </div>
             </div>
-            {/* Rangée 2 */}
-            <div style={{display:'grid',gridTemplateColumns:'1fr 1.5fr 1fr',gap:12}}>
-              <div style={{background:G.pale,borderRadius:12,padding:'14px 16px',border:`1px solid ${G.border}`}}>
+
+            <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:12}}>
+              <div style={{background:G.pale,borderRadius:12,padding:'14px 16px',border:`1px solid ${G.border}`, paddingRight: '24px'}}>
                 <div style={{fontSize:11,fontWeight:800,color:G.dark,marginBottom:8}}>Total Réalisé par Site</div>
                 <DonutChart segments={bySite.map((s,i)=>({label:s.site,value:s.tonnage_realise,color:i===0?G.dark:G.light}))}/>
               </div>
               <div style={{background:G.pale,borderRadius:12,padding:'14px 16px',border:`1px solid ${G.border}`}}>
-                <div style={{fontSize:11,fontWeight:800,color:G.dark,marginBottom:8}}>Tonnage Expédié VS Nbre de Voyages</div>
-                <Legend items={[{color:G.main,label:'Réalisé Manutention'},{color:G.yellow,label:'Nbre Voyages',dash:true}]}/>
-                <GroupedBarLineChart data={byQualVoyages} keyA="tonnage_realise" keyB="nbre_voyages" keyLine="nbre_voyages" colorA={G.main} colorB={G.mid} colorLine={G.yellow}/>
-              </div>
-              <div style={{background:G.pale,borderRadius:12,padding:'14px 16px',border:`1px solid ${G.border}`}}>
-                <div style={{fontSize:11,fontWeight:800,color:G.dark,marginBottom:8}}>Moyenne Cycle Extraction par Site</div>
-                <SimpleBarChart data={cycleBySite} valueKey="cycle_moyen" labelKey="site" color={G.main}/>
+                <div style={{fontSize:11,fontWeight:800,color:G.dark,marginBottom:8}}>Production Mensuelle : Réalisé vs Prévu</div>
+                <Legend items={[{color:G.dark,label:'Réalisé'},{color:G.light,label:'Prévu'}]}/>
+                <GroupedBarLineChart data={byMois} keyA="tonnage_realise" keyB="tonnage_prevu" keyLine="ecart" colorA={G.dark} colorB={G.light} colorLine={G.yellow}/>
               </div>
             </div>
+
             <ExportBar
               onPDF={()=>exportPDF('Analyse de la Production Réelle',COLS,rows(),'production_analyse')}
               onExcel={()=>exportExcel('Production',COLS,byMois.map(d=>[d.mois,d.tonnage_realise,d.tonnage_prevu,d.ecart]),'production_analyse')}
@@ -1022,7 +1039,7 @@ function AnalyseProductionSection() {
 }
 
 // ═══════════════════════════════════════════════════════════════
-// SECTIONS PRÉVISIONS — style Section original
+// SECTIONS PRÉVISIONS
 // ═══════════════════════════════════════════════════════════════
 function ChargesSection() {
   const [data,setData]=useState([]),[postes,setPostes]=useState([]),[poste,setPoste]=useState('');
@@ -1033,16 +1050,15 @@ function ChargesSection() {
   const COLS=['Poste','Mois','Coût prévu (MAD)'];
   const rows=()=>filtered.map(d=>[d.poste,d.mois,fmtNum(d.cout_prevu)]);
   return (
-    <Section title="Prévision des charges" icon="📈" badge={`${data.length} prédictions`} loading={loading} error={error}>
-      {/* Badge ML */}
+    <Section title="Prévision des charges" icon={<FaChartLine />} badge={`${data.length} prédictions`} loading={loading} error={error}>
       <div style={{display:'inline-flex',alignItems:'center',gap:6,background:'#e3f2fd',border:'1.5px solid #90caf9',borderRadius:99,padding:'4px 14px',marginBottom:14,fontSize:11,fontWeight:700,color:G.blue}}>
-        🤖 Régression Linéaire · Mois restants de l'année
+        <FaRobot style={{ fontSize:12 }} /> Régression Linéaire · Mois restants de l'année
       </div>
       <div style={{display:'flex',justifyContent:'space-between',flexWrap:'wrap',gap:12,marginBottom:16}}>
         <Selector items={postes} selected={poste} onChange={setPoste}/>
         <div style={{display:'flex',gap:6}}>
           {['bar','line'].map(t=><button key={t} onClick={()=>setChartType(t)} style={{padding:'4px 12px',borderRadius:8,fontSize:11,fontWeight:700,border:`1.5px solid ${chartType===t?G.main:G.border}`,background:chartType===t?G.main:G.white,color:chartType===t?G.white:G.muted,cursor:'pointer',fontFamily:'Nunito'}}>
-            {t==='line'?'〰 Ligne':'▬ Barres'}
+            {t==='line' ? <FaChartLine /> : <FaChartBar />}
           </button>)}
         </div>
       </div>
@@ -1066,15 +1082,15 @@ function ProductionSection() {
   const COLS=['Activité','Mois','Tonnage prévu (T)'];
   const rows=()=>filtered.map(d=>[d.activite,d.mois,fmtNum(d.tonnage_prevu)]);
   return (
-    <Section title="Prévision de production" icon="⚙️" badge={`${data.length} prédictions`} loading={loading} error={error} accentColor={G.blue}>
+    <Section title="Prévision de production" icon={<FaCogs />} badge={`${data.length} prédictions`} loading={loading} error={error} accentColor={G.blue}>
       <div style={{display:'inline-flex',alignItems:'center',gap:6,background:'#e3f2fd',border:'1.5px solid #90caf9',borderRadius:99,padding:'4px 14px',marginBottom:14,fontSize:11,fontWeight:700,color:G.blue}}>
-        🤖 Régression Linéaire · Mois restants de l'année
+        <FaRobot style={{ fontSize:12 }} /> Régression Linéaire · Mois restants de l'année
       </div>
       <div style={{display:'flex',justifyContent:'space-between',flexWrap:'wrap',gap:12,marginBottom:16}}>
         <Selector items={activites} selected={activite} onChange={setActivite}/>
         <div style={{display:'flex',gap:6}}>
           {['bar','line'].map(t=><button key={t} onClick={()=>setChartType(t)} style={{padding:'4px 12px',borderRadius:8,fontSize:11,fontWeight:700,border:`1.5px solid ${chartType===t?G.blue:G.border}`,background:chartType===t?G.blue:G.white,color:chartType===t?G.white:G.muted,cursor:'pointer',fontFamily:'Nunito'}}>
-            {t==='line'?'〰 Ligne':'▬ Barres'}
+            {t==='line' ? <FaChartLine /> : <FaChartBar />}
           </button>)}
         </div>
       </div>
@@ -1090,74 +1106,121 @@ function ProductionSection() {
 }
 
 function AnomaliesSection({ onKpiLoad }) {
-  const [data,setData]=useState([]),[total,setTotal]=useState(0);
-  const [loading,setLoading]=useState(true),[error,setError]=useState(null);
-  const [filtre,setFiltre]=useState('TOUS'),[page,setPage]=useState(0);
+  const [data,setData]=useState([]);
+  const [total,setTotal]=useState(0);
+  const [loading,setLoading]=useState(true);
+  const [error,setError]=useState(null);
+  const [filtre,setFiltre]=useState('TOUS');
+  const [page,setPage]=useState(0);
   const PER_PAGE=6;
-  useEffect(()=>{fetch(`${API_AI}/anomalies`).then(r=>r.json()).then(j=>{setData(j.anomalies??[]);setTotal(j.total??0);onKpiLoad&&onKpiLoad(j.anomalies??[],j.total??0);setLoading(false);}).catch(()=>{setError('Impossible de contacter /anomalies');setLoading(false);});},[]);
+
+  useEffect(()=>{
+    fetch(`${API_AI}/anomalies`)
+      .then(r=>r.json())
+      .then(j=>{
+        setData(j.anomalies??[]);
+        setTotal(j.total??0);
+        onKpiLoad&&onKpiLoad(j.anomalies??[],j.total??0);
+        setLoading(false);
+      })
+      .catch(()=>{
+        setError('Impossible de contacter /anomalies');
+        setLoading(false);
+      });
+  },[]);
+
   const niveaux=['TOUS',...new Set(data.map(d=>d.niveau))];
   const filtered=useMemo(()=>filtre==='TOUS'?data:data.filter(d=>d.niveau===filtre),[data,filtre]);
   const paged=filtered.slice(page*PER_PAGE,(page+1)*PER_PAGE);
   const pages=Math.ceil(filtered.length/PER_PAGE);
-  const ns=n=>({CRITIQUE:{bg:'#fdecea',color:G.red,border:'#f5c6c666',label:'🔴 CRITIQUE'},ATTENTION:{bg:'#fff8e1',color:G.amber,border:'#f9a82566',label:'🟡 ATTENTION'},INCONNU:{bg:G.pale,color:G.muted,border:G.border,label:'⚪ INCONNU'}}[n]||{bg:G.pale,color:G.muted,border:G.border,label:n});
+
+  const getStyle = (niveau) => {
+    switch(niveau) {
+      case 'CRITIQUE': return { bg:'#fdecea', color:G.red, border:'#f5c6c666', label:<><FaTimes /> CRITIQUE</> };
+      case 'ATTENTION': return { bg:'#fff8e1', color:G.amber, border:'#f9a82566', label:<><FaExclamationTriangle /> ATTENTION</> };
+      default: return { bg:G.pale, color:G.muted, border:G.border, label:<><FaQuestionCircle /> INCONNU</> };
+    }
+  };
+
   const COLS=['Date','Poste','Mois','Réalisé','Prévu','Écart','Niveau'];
   const exportRows=()=>filtered.map(a=>[a.date?.slice(0,10)??'',a.poste??'',a.mois??'',fmtNum(a.realise),fmtNum(a.prevu),fmtNum(a.ecart),a.niveau??'']);
+
   return (
-    <Section title="Anomalies — Isolation Forest" icon="🔍" badge={`${total} total`} loading={loading} error={error} accentColor={G.red}>
-      {!loading&&!error&&(<>
-        {/* Mini bar chart anomalies */}
-        <div style={{marginBottom:16}}>
-          <Legend items={[{color:G.red,label:'Critique'},{color:G.amber,label:'Attention'}]}/>
-          <AnoBarChart data={data}/>
-        </div>
-        <Selector items={niveaux} selected={filtre} onChange={v=>{setFiltre(v);setPage(0);}}/>
-        <div style={{overflowX:'auto',borderRadius:12,border:`1px solid ${G.border}`}}>
-          <table style={{width:'100%',borderCollapse:'collapse',fontFamily:'Nunito',fontSize:13}}>
-            <thead><tr style={{background:G.pale}}>
-              {COLS.map(h=><th key={h} style={{padding:'10px 14px',textAlign:'left',fontWeight:900,fontSize:10,letterSpacing:1.5,textTransform:'uppercase',color:G.main,borderBottom:`1.5px solid ${G.border}`}}>{h}</th>)}
-            </tr></thead>
-            <tbody>
-              {paged.length===0
-                ?<tr><td colSpan={7} style={{textAlign:'center',padding:'32px',color:G.muted}}>Aucune anomalie pour ce filtre.</td></tr>
-                :paged.map((a,i)=>{const s=ns(a.niveau);return(
-                <tr key={i} style={{borderBottom:`1px solid ${G.border}`,background:i%2===0?G.white:'#fafef9',transition:'150ms'}}
-                  onMouseEnter={e=>e.currentTarget.style.background=G.pale}
-                  onMouseLeave={e=>e.currentTarget.style.background=i%2===0?G.white:'#fafef9'}>
-                  <td style={{padding:'10px 14px',color:G.muted,fontSize:12}}>{a.date?.slice(0,10)}</td>
-                  <td style={{padding:'10px 14px',fontWeight:800,color:G.dark}}>{a.poste}</td>
-                  <td style={{padding:'10px 14px',color:G.muted}}>{a.mois}</td>
-                  <td style={{padding:'10px 14px',fontWeight:700}}>{a.realise?.toLocaleString('fr-FR')}</td>
-                  <td style={{padding:'10px 14px'}}>{a.prevu?.toLocaleString('fr-FR')}</td>
-                  <td style={{padding:'10px 14px',fontWeight:700,color:a.ecart<0?G.red:G.light}}>{a.ecart>0?'+':''}{a.ecart?.toLocaleString('fr-FR')}</td>
-                  <td style={{padding:'10px 14px'}}><span style={{display:'inline-flex',alignItems:'center',gap:5,padding:'3px 10px',borderRadius:99,fontSize:11,fontWeight:800,background:s.bg,color:s.color,border:`1px solid ${s.border}`}}>{s.label}</span></td>
-                </tr>);})}
-            </tbody>
-          </table>
-        </div>
-        {pages>1&&<div style={{display:'flex',justifyContent:'center',gap:6,marginTop:16}}>
-          {Array.from({length:pages},(_,i)=><button key={i} onClick={()=>setPage(i)} style={{width:32,height:32,borderRadius:8,border:`1.5px solid ${page===i?G.main:G.border}`,background:page===i?G.main:G.white,color:page===i?G.white:G.muted,fontWeight:800,fontSize:13,cursor:'pointer',fontFamily:'Nunito'}}>{i+1}</button>)}
-        </div>}
-        <ExportBar onPDF={()=>exportPDF(`Anomalies — Isolation Forest (filtre : ${filtre})`,COLS,exportRows(),`anomalies_${filtre}`)} onExcel={()=>exportExcel('Anomalies',COLS,exportRows(),`anomalies_${filtre}`)}/>
-      </>)}
+    <Section title="Anomalies — Isolation Forest" icon={<FaSearch />} badge={`${total} total`} loading={loading} error={error} accentColor={G.red}>
+      {!loading && !error && (
+        <>
+          <div style={{marginBottom:16}}>
+            <Legend items={[{color:G.red,label:'Critique'},{color:G.amber,label:'Attention'}]}/>
+            <AnoBarChart data={data}/>
+          </div>
+          <Selector items={niveaux} selected={filtre} onChange={v=>{setFiltre(v);setPage(0);}}/>
+          <div style={{overflowX:'auto',borderRadius:12,border:`1px solid ${G.border}`}}>
+            <table style={{width:'100%',borderCollapse:'collapse',fontFamily:'Nunito',fontSize:13}}>
+              <thead>
+                <tr style={{background:G.pale}}>
+                  {COLS.map(h=>(
+                    <th key={h} style={{padding:'10px 14px',textAlign:'left',fontWeight:900,fontSize:10,letterSpacing:1.5,textTransform:'uppercase',color:G.main,borderBottom:`1.5px solid ${G.border}`}}>{h}</th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {paged.length===0 ? (
+                  <tr>
+                    <td colSpan={7} style={{textAlign:'center',padding:'32px',color:G.muted}}>Aucune anomalie pour ce filtre.</td>
+                  </tr>
+                ) : (
+                  paged.map((a,i)=>{
+                    const s = getStyle(a.niveau);
+                    return (
+                      <tr key={i} style={{borderBottom:`1px solid ${G.border}`,background:i%2===0?G.white:'#fafef9',transition:'150ms'}}
+                        onMouseEnter={e=>e.currentTarget.style.background=G.pale}
+                        onMouseLeave={e=>e.currentTarget.style.background=i%2===0?G.white:'#fafef9'}>
+                        <td style={{padding:'10px 14px',color:G.muted,fontSize:12}}>{a.date?.slice(0,10)}</td>
+                        <td style={{padding:'10px 14px',fontWeight:800,color:G.dark}}>{a.poste}</td>
+                        <td style={{padding:'10px 14px',color:G.muted}}>{a.mois}</td>
+                        <td style={{padding:'10px 14px',fontWeight:700}}>{a.realise?.toLocaleString('fr-FR')}</td>
+                        <td style={{padding:'10px 14px'}}>{a.prevu?.toLocaleString('fr-FR')}</td>
+                        <td style={{padding:'10px 14px',fontWeight:700,color:a.ecart<0?G.red:G.light}}>{a.ecart>0?'+':''}{a.ecart?.toLocaleString('fr-FR')}</td>
+                        <td style={{padding:'10px 14px'}}><span style={{display:'inline-flex',alignItems:'center',gap:5,padding:'3px 10px',borderRadius:99,fontSize:11,fontWeight:800,background:s.bg,color:s.color,border:`1px solid ${s.border}`}}>{s.label}</span></td>
+                      </tr>
+                    );
+                  })
+                )}
+              </tbody>
+            </table>
+          </div>
+          {pages>1 && (
+            <div style={{display:'flex',justifyContent:'center',gap:6,marginTop:16}}>
+              {Array.from({length:pages},(_,i)=>(
+                <button key={i} onClick={()=>setPage(i)} style={{width:32,height:32,borderRadius:8,border:`1.5px solid ${page===i?G.main:G.border}`,background:page===i?G.main:G.white,color:page===i?G.white:G.muted,fontWeight:800,fontSize:13,cursor:'pointer',fontFamily:'Nunito'}}>{i+1}</button>
+              ))}
+            </div>
+          )}
+          <ExportBar
+            onPDF={()=>exportPDF(`Anomalies — Isolation Forest (filtre : ${filtre})`,COLS,exportRows(),`anomalies_${filtre}`)}
+            onExcel={()=>exportExcel('Anomalies',COLS,exportRows(),`anomalies_${filtre}`)}
+          />
+        </>
+      )}
     </Section>
   );
 }
 
 // ═══════════════════════════════════════════════════════════════
-// DASHBOARD PRINCIPAL — structure identique à l'original
+// DASHBOARD PRINCIPAL
 // ═══════════════════════════════════════════════════════════════
 const TABS = [
-  { id:'analyse',    label:'Analyse',    icon:'📊' },
-  { id:'previsions', label:'Prévisions', icon:'🤖' },
-  { id:'upload',     label:'Import données', icon:'↑' },
+  { id:'analyse',    label:'Analyse',    icon:<FaChartBar /> },
+  { id:'previsions', label:'Prévisions', icon:<FaRobot /> },
+  { id:'upload',     label:'Import données', icon:<FaUpload /> },
 ];
 
 export default function Dashboard() {
   const [currentUser, setCurrentUser] = useState(()=>JSON.parse(localStorage.getItem('user')));
   const navigate = useNavigate();
-  const [tab, setTab]               = useState('analyse');
-  const [kpiData, setKpiData]       = useState({total:0,critique:0,attention:0});
-  const [showProfile, setShowProfile]= useState(false);
+  const [tab, setTab] = useState('analyse');
+  const [kpiData, setKpiData] = useState({total:0,critique:0,attention:0});
+  const [showProfile, setShowProfile] = useState(false);
   const initials = currentUser?.fullname?.split(' ').map(n=>n[0]).join('').toUpperCase().slice(0,2)?? 'OC';
 
   const handleLogout = async () => {
@@ -1183,14 +1246,12 @@ export default function Dashboard() {
         * { box-sizing: border-box; }
       `}</style>
 
-      {/* TOP BAR — identique à l'original */}
       <nav style={{ background:G.dark, borderBottom:`3px solid ${G.light}`, padding:'0 32px',
         height:60, display:'flex', alignItems:'center', justifyContent:'space-between',
         position:'sticky', top:0, zIndex:100, boxShadow:'0 4px 24px rgba(0,0,0,0.25)' }}>
         <div style={{ display:'flex', alignItems:'center', gap:14 }}>
           <img src={ocpLogo} alt="OCP" style={{ height:32, filter:'brightness(0) invert(1)' }}/>
           <div style={{ width:1, height:28, background:'#ffffff30' }}/>
-          <span style={{ color:'#ffffffcc', fontSize:13, fontWeight:700, letterSpacing:1 }}>PORTAIL RH</span>
         </div>
         <div style={{ display:'flex', alignItems:'center', gap:12 }}>
           <button onClick={()=>setShowProfile(true)} style={{
@@ -1206,7 +1267,7 @@ export default function Dashboard() {
             </div>
             <div style={{ textAlign:'left' }}>
               <div style={{ color:G.white, fontSize:12, fontWeight:700 }}>{currentUser?.fullname}</div>
-              <div style={{ color:'#ffffff70', fontSize:10, fontWeight:600 }}>✏️ Modifier le profil</div>
+              <div style={{ color:'#ffffff70', fontSize:10, fontWeight:600 }}><FaEdit style={{ marginRight:4 }} /> Modifier le profil</div>
             </div>
           </button>
           <button onClick={handleLogout} style={{
@@ -1216,36 +1277,32 @@ export default function Dashboard() {
           }}
             onMouseEnter={e=>{e.currentTarget.style.background='#ffffff20';e.currentTarget.style.borderColor=G.light;}}
             onMouseLeave={e=>{e.currentTarget.style.background='transparent';e.currentTarget.style.borderColor='#ffffff40';}}>
-            Déconnexion
+            <FaSignOutAlt style={{ marginRight:6 }} /> Déconnexion
           </button>
         </div>
       </nav>
 
-      {/* MAIN — maxWidth:1100 identique à l'original */}
       <main style={{ maxWidth:1100, margin:'0 auto', padding:'32px 24px 80px' }}>
-
-        {/* Greeting — identique à l'original */}
         <div style={{ marginBottom:28, animation:'fadeUp 0.4s ease both' }}>
           <p style={{ fontSize:11, fontWeight:800, letterSpacing:2, textTransform:'uppercase', color:G.mid, marginBottom:4 }}>Espace contrôleur</p>
           <h1 style={{ fontSize:26, fontWeight:900, color:G.dark, margin:0 }}>
             {greeting}, <span style={{ color:G.main }}>{currentUser?.fullname}</span>
           </h1>
           <p style={{ color:G.muted, fontSize:13, marginTop:4 }}>
+            <FaRegCalendarAlt style={{ marginRight:6, verticalAlign:'middle' }} />
             {new Date().toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'long',year:'numeric'})}
           </p>
         </div>
 
-        {/* KPI Anomalies rapides */}
-        {kpiData.total>0&&(
+        {kpiData.total>0 && (
           <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(200px, 1fr))', gap:16, marginBottom:28 }}>
-            <KpiCard label="Anomalies totales" value={kpiData.total} icon="🔍" color={G.main} bg={G.pale} trend="Détectées par Isolation Forest"/>
-            <KpiCard label="Critiques" value={kpiData.critique} icon="🔴" color={G.red} bg="#fdecea" trend="Nécessitent une action immédiate"/>
-            <KpiCard label="Attention" value={kpiData.attention} icon="🟡" color={G.amber} bg="#fff8e1" trend="À surveiller de près"/>
-            <KpiCard label="Modèles IA actifs" value={3} icon="🤖" color={G.blue} bg={G.bluePale} trend="Régression · IsoForest · LLaMA"/>
+            <KpiCard label="Anomalies totales" value={kpiData.total} icon={<FaSearch />} color={G.main} bg={G.pale} trend="Détectées par Isolation Forest"/>
+            <KpiCard label="Critiques" value={kpiData.critique} icon={<FaTimes />} color={G.red} bg="#fdecea" trend="Nécessitent une action immédiate"/>
+            <KpiCard label="Attention" value={kpiData.attention} icon={<FaExclamationTriangle />} color={G.amber} bg="#fff8e1" trend="À surveiller de près"/>
+            <KpiCard label="Modèles IA actifs" value={3} icon={<FaRobot />} color={G.blue} bg={G.bluePale} trend="Régression · IsoForest · LLaMA"/>
           </div>
         )}
 
-        {/* TABS — identiques à l'original */}
         <div style={{ display:'flex', gap:4, marginBottom:28, borderBottom:`2px solid ${G.border}`,
           animation:'fadeUp 0.4s 0.05s ease both' }}>
           {TABS.map(t=>(
@@ -1256,23 +1313,22 @@ export default function Dashboard() {
               color: tab===t.id?G.main:G.muted,
               borderBottom:`2px solid ${tab===t.id?G.main:'transparent'}`,
               marginBottom:-2, letterSpacing:0.5, transition:'150ms',
-            }}><span>{t.icon}</span> {t.label}</button>
+            }}><span style={{ fontSize:14 }}>{t.icon}</span> {t.label}</button>
           ))}
         </div>
 
-        {/* CONTENU PAR ONGLET */}
-        {tab==='upload'&&(
+        {tab==='upload' && (
           <div style={{animation:'fadeUp 0.3s ease both'}}><UploadBox/></div>
         )}
 
-        {tab==='analyse'&&(
+        {tab==='analyse' && (
           <div style={{animation:'fadeUp 0.3s ease both'}}>
             <AnalyseChargesSection/>
             <AnalyseProductionSection/>
           </div>
         )}
 
-        {tab==='previsions'&&(
+        {tab==='previsions' && (
           <div style={{animation:'fadeUp 0.3s ease both'}}>
             <ChargesSection/>
             <ProductionSection/>
@@ -1281,7 +1337,7 @@ export default function Dashboard() {
         )}
       </main>
 
-      {showProfile&&<ProfileModal user={currentUser} onClose={()=>setShowProfile(false)} onSaved={handleProfileSaved}/>}
+      {showProfile && <ProfileModal user={currentUser} onClose={()=>setShowProfile(false)} onSaved={handleProfileSaved}/>}
       <AIChatbot/>
     </div>
   );

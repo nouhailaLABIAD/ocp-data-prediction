@@ -48,15 +48,14 @@ export default function Login() {
         <img src={ocpLogo} alt="OCP Logo" className="login-logo" />
         <div className="login-left-divider" />
         <h2 className="login-brand-title">OCP Group</h2>
-        <p className="login-brand-subtitle">
+        {/* <p className="login-brand-subtitle">
           Plateforme interne de gestion et de suivi des collaborateurs
-        </p>
+        </p> */}
       </div>
 
       {/* ── Côté droit ── */}
       <div className="login-right">
         <div className="login-form-header">
-          <p className="login-form-eyebrow">Portail RH</p>
           <h1 className="login-title">Connexion</h1>
           <p className="login-subtitle">Bienvenue, veuillez vous identifier</p>
         </div>
@@ -120,7 +119,7 @@ export default function Login() {
           {error && <p className="login-error">{error}</p>}
         </form>
 
-        <p className="login-footer">OCP Group © {new Date().getFullYear()}</p>
+        {/* <p className="login-footer">OCP Group © {new Date().getFullYear()}</p> */}
       </div>
 
     </div>

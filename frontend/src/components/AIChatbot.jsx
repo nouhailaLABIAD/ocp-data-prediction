@@ -1,6 +1,13 @@
 // AIChatbot.jsx — OCP Portail · Assistant IA contextuel
 // Appelle POST /chat sur ton FastAPI (proxy Anthropic sécurisé)
+// Tous les émojis remplacés par des icônes react-icons
+
 import { useState, useRef, useEffect } from 'react';
+import { 
+  FaRobot, FaUser, FaTrashAlt, FaTimes, FaCircle, 
+  FaExclamationTriangle, FaSyncAlt, FaArrowUp, FaPaperPlane,
+  FaSpinner, FaRegCommentDots
+} from 'react-icons/fa';
 
 const API_FASTAPI = 'http://localhost:8000';
 
@@ -122,7 +129,9 @@ function Bubble({ msg }) {
           display:'flex', alignItems:'center', justifyContent:'center',
           fontSize:14, flexShrink:0, marginRight:10, marginTop:4,
           boxShadow:'0 2px 8px rgba(45,106,47,0.3)',
-        }}>🤖</div>
+        }}>
+          <FaRobot />
+        </div>
       )}
       <div style={{
         maxWidth:'75%',
@@ -142,7 +151,9 @@ function Bubble({ msg }) {
           background:'rgba(45,106,47,0.15)', border:`2px solid ${G.border}`,
           display:'flex', alignItems:'center', justifyContent:'center',
           fontSize:14, flexShrink:0, marginLeft:10, marginTop:4,
-        }}>👤</div>
+        }}>
+          <FaUser />
+        </div>
       )}
     </div>
   );
@@ -155,7 +166,9 @@ function TypingIndicator() {
         width:32, height:32, borderRadius:'50%',
         background:`linear-gradient(135deg, ${G.main}, ${G.light})`,
         display:'flex', alignItems:'center', justifyContent:'center', fontSize:14,
-      }}>🤖</div>
+      }}>
+        <FaRobot />
+      </div>
       <div style={{
         background:'#fff', border:`1px solid ${G.border}`,
         borderRadius:'18px 18px 18px 4px', padding:'12px 18px',
@@ -283,7 +296,7 @@ export default function AIChatbot() {
         transition:'transform 200ms',
         display:'flex', alignItems:'center', justifyContent:'center',
       }}>
-        {open ? '✕' : '🤖'}
+        {open ? <FaTimes /> : <FaRegCommentDots />}
       </button>
 
       {open && (
@@ -306,17 +319,22 @@ export default function AIChatbot() {
               width:36, height:36, borderRadius:'50%',
               background:'rgba(255,255,255,0.15)', border:'2px solid rgba(255,255,255,0.3)',
               display:'flex', alignItems:'center', justifyContent:'center', fontSize:16,
-            }}>🤖</div>
+            }}>
+              <FaRobot />
+            </div>
             <div style={{ flex:1 }}>
               <p style={{ color:'#fff', fontWeight:800, fontSize:14, margin:0 }}>Assistant IA OCP</p>
               <p style={{ color:'rgba(255,255,255,0.7)', fontSize:11, margin:0 }}>
-                {ctxLoaded ? '● Données chargées' : '○ Chargement…'}
+                {ctxLoaded ? <><FaCircle style={{ fontSize:8, marginRight:4 }} /> Données chargées</> : <><FaSpinner style={{ fontSize:8, marginRight:4, animation:'spin 1s linear infinite' }} /> Chargement…</>}
               </p>
             </div>
             <button onClick={clearChat} title="Réinitialiser" style={{
               background:'none', border:'none', cursor:'pointer',
               color:'rgba(255,255,255,0.7)', fontSize:16, padding:'4px 8px', borderRadius:6,
-            }}>🗑</button>
+              display:'flex', alignItems:'center', justifyContent:'center',
+            }}>
+              <FaTrashAlt />
+            </button>
           </div>
 
           {/* Messages */}
@@ -355,7 +373,10 @@ export default function AIChatbot() {
             <div style={{
               padding:'8px 14px', background:'#fdecea',
               borderTop:'1px solid #f5c6c6', fontSize:12, color:'#c0392b', fontWeight:600,
-            }}>✕ {error}</div>
+              display:'flex', alignItems:'center', gap:6,
+            }}>
+              <FaExclamationTriangle /> {error}
+            </div>
           )}
 
           {/* Saisie */}
@@ -394,10 +415,18 @@ export default function AIChatbot() {
                 fontSize:16, flexShrink:0, transition:'200ms',
                 display:'flex', alignItems:'center', justifyContent:'center',
               }}
-            >↑</button>
+            >
+              <FaArrowUp />
+            </button>
           </div>
         </div>
       )}
+      <style>{`
+        @keyframes spin {
+          from { transform: rotate(0deg); }
+          to { transform: rotate(360deg); }
+        }
+      `}</style>
     </>
   );
 }

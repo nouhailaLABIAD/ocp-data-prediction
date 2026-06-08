@@ -1,0 +1,44 @@
+version: "3.9"
+
+services:
+
+  backend:
+    build: ./backend
+    container_name: backend
+    ports:
+      - "3001:3000"
+    env_file:
+      - ./backend/.env.docker
+    depends_on:
+      - db
+
+  ai-service:
+    build: ./ai-service
+    container_name: ai-service
+    ports:
+      - "8000:8000"
+
+  frontend:
+    build: ./frontend
+    container_name: frontend
+    ports:
+      - "5173:5173"
+    depends_on:
+      - backend
+      - ai-service
+
+  db:
+    image: postgres:15
+    container_name: postgres_db
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 1234
+      POSTGRES_DB: ocp_prediction
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+volumes:
+  pgdata:
